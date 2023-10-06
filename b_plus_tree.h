@@ -1,31 +1,11 @@
-#ifndef B_PLUS_TREE_H;
-#define B_PLUS_TREE_H;
+#ifndef B_PLUS_TREE_H
+#define B_PLUS_TREE_H
 
 #include "types.h"
 #include "memory_pool.h"
 
 #include <cstddef>
 #include <array>
-
-
-
-class BPlusTree
-{
-    private:
-        Address* addressOfRootNode; // Address of the root node
-        Node *rootOfTree; // Pointer to root's address in the Main Memory
-        int levels; // The number of levels in the B Plus Tree
-        int numNodes; // The number of nodes in the B Plus Tree
-        size_t sizeOfNode; // The size of a Node in the B Plus Tree
-        size_t nodeBufferSize;
-        int maxKeys;
-
-
-    public:
-        BPlusTree(std::size_t blockSize, MemoryPool *disk);
-        void search(float lowerBoundKey, float upperBoundKey);
-    
-};
 
 class Node
 {
@@ -56,5 +36,25 @@ class Node
             return pointers;
         }
 };
+
+class BPlusTree
+{
+    private:
+        Address* addressOfRootNode; // Address of the root node
+        Node *rootOfTree; // Pointer to root's address in the Main Memory
+        int levels; // The number of levels in the B Plus Tree
+        int numNodes; // The number of nodes in the B Plus Tree
+        size_t sizeOfNode; // The size of a Node in the B Plus Tree
+        size_t nodeBufferSize;
+        int maxKeys;
+
+
+    public:
+        BPlusTree(std::size_t blockSize, MemoryPool *disk);
+        void search(float lowerBoundKey, float upperBoundKey);
+    
+};
+
+
 
 #endif
