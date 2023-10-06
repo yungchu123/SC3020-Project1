@@ -3,6 +3,7 @@
 #include "types.h"
 
 #include <cmath>
+#include <iostream>
 
 BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
 {
@@ -44,6 +45,7 @@ BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
 
 void BPlusTree::insert(Address *address, float key)
 {
+    std::cout << "Inserting Key = " << key << ", Address = " << address << std::endl;
     // B+ Tree is currently empty
     if (this->rootNode == nullptr)
     {
@@ -55,6 +57,7 @@ void BPlusTree::insert(Address *address, float key)
 
         this->rootNode = newRoot; // Initialising B+ Tree root node
         // index->saveToDisk(newRoot, nodeSize);
+
     }
     // Traverse B+ Tree to find location to insert key
     else
@@ -197,7 +200,7 @@ void BPlusTree::insert(Address *address, float key)
             // Update keys/ pointers that have been moved to newNode to NULL
             for (int i = current->numKeys; i < maxKeys; i++)
             {
-                current->keys[i] = NULL;
+                current->keys[i] = -1;
                 current->pointers[i] = nullptr;
             }
 
@@ -322,7 +325,7 @@ void BPlusTree::restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode 
             }
             else
             {
-                parentNode->keys[i] = NULL;
+                parentNode->keys[i] = -1;
             }
         }
         for (int i = 0; i < maxKeys + 1; i++)
