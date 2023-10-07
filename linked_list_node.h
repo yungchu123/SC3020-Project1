@@ -51,6 +51,14 @@ public:
     {
         return key;
     }
+
+    //changed delete to LLdelete
+    void LLdelete();
+    
+    //changed delete to LLdelete
+    ~LL(){
+        LLdelete();
+    }
 };
 
 #endif
