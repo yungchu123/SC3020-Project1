@@ -27,7 +27,8 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
         // Store the root of the tree as the current node.
         BPlusTreeNode *current_node = rootOfTree;
 
-       // (TO ADD CODE) Display the content of the index node.
+       // Display the content of the node.
+       displayNode(current_node);
 
         // std::cout << "Index node accessed. Content is -------";
 
@@ -41,7 +42,9 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                     // Get the address of the node that the pointer is pointing towards
                     current_node = (BPlusTreeNode *) current_node -> pointers[i];
                     
-                    // (TO ADD CODE) Display the content of the index node.
+                    // Display the content of the node.
+                    displayNode(current_node);
+                    
                     break;
                 }
 
@@ -50,7 +53,9 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                     // go to the node that the right pointer is pointing at to continue searching
                     current_node = (BPlusTreeNode *) current_node -> pointers[i + 1];
             
-                    // (TO ADD CODE) Display the content of the index node
+                    // Display the content of the node.
+                    displayNode(current_node);
+                    
                     break;
                 }
 
@@ -77,7 +82,6 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                     {
                         // If it is stored in a linked list, get the pointer to the linked list.
                         LL* addressOfLLwithinBound = (LL*)current_node -> pointers[i];
-
 
                         // Get all the values in the linked list.
                         for (int i = 0; i < addressOfLLwithinBound -> numRecords; i++)
@@ -123,16 +127,17 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                             exploredRange = true;
                         }
 
-                        // update the current_node as the next leaf node.
-                        current_node = (BPlusTreeNode *)(current_node->pointers[maxKeys]);
-                        
+                        else
+                        {
+                            // update the current_node as the next leaf node.
+                            current_node = (BPlusTreeNode *)(current_node->pointers[maxKeys]);
+                            
+                            // Display the content of the node.
+                            displayNode(current_node);
+                        }
                     }
                 }
             }
-                
         }
-
     }
-
-
 }
