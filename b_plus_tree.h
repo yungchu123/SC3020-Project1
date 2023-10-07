@@ -9,7 +9,6 @@
 #include <cstddef>
 #include <array>
 
-
 using namespace std;
 
 
@@ -37,6 +36,7 @@ class BPlusTree
         int remove(double minValue, double maxValue);
         void removeInternal(float key, BPlusTreeNode *cursorDiskAddress, BPlusTreeNode *childDiskAddress);
         void removeLL(Address LLHeadAddress);
+
         void borrowOrMerge(BPlusTreeNode *cursor, BPlusTreeNode *parent, int leftSibling, int rightSibling);
 
         // Insert a key into the tree
@@ -64,7 +64,6 @@ class BPlusTree
         int getMaxKeys() {
             return maxKeys;
         }
-    
 };
 
 #endif

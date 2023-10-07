@@ -9,6 +9,7 @@ void BPlusTree::insert(Address address, float key)
 {
     std::cout << "Inserting Key = " << key << std::endl;
     // B+ Tree is currently empty
+
     if (this->rootOfTree == nullptr)
     {
         // Creating a new Linked List for each new key
@@ -23,12 +24,14 @@ void BPlusTree::insert(Address address, float key)
         newRoot->keys[0] = key;
         newRoot->pointers[0] = LLAddress;
 
+
         this->rootOfTree = newRoot; // Initialising B+ Tree root node
         // index->saveToDisk(newRoot, nodeSize);
     }
     // Traverse B+ Tree to find location to insert key
     else
     {
+
         BPlusTreeNode *current = rootOfTree;
         BPlusTreeNode *parent;
 
@@ -201,6 +204,7 @@ void BPlusTree::insert(Address address, float key)
 
             // Adjusting/ Creating parent node
             // Check if currentNode == root
+
             if (this->rootOfTree == current)
             {
                 BPlusTreeNode *newRoot = new BPlusTreeNode(maxKeys);
