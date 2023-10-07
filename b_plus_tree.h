@@ -20,7 +20,7 @@ public:
     BPlusTree(std::size_t blockSize, MemoryPool *disk);
 
     // Inserting a new key
-    void insert(Address *address, float key);
+    void insert(Address address, float key);
 
     // Shifting layer when inserting new records (if necessary)
     void restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);

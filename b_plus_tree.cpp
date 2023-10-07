@@ -1,5 +1,6 @@
 #include "b_plus_tree.h"
 #include "b_plus_tree_node.h"
+#include "linked_list_node.h"
 #include "types.h"
 
 #include <cmath>
@@ -43,21 +44,26 @@ BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
     this->disk = disk;
 }
 
-void BPlusTree::insert(Address *address, float key)
+void BPlusTree::insert(Address address, float key)
 {
-    std::cout << "Inserting Key = " << key << ", Address = " << address << std::endl;
+    std::cout << "Inserting Key = " << key << std::endl;
     // B+ Tree is currently empty
     if (this->rootNode == nullptr)
     {
+        // Creating a new Linked List for each new key
+        LLNode *newLinkedListNode = new LLNode(address);
+        LL *newLinkedList = new LL(newLinkedListNode, key);
+        // Storing the header of the linked list into Disk
+        Address *LLAddress = new Address(disk->saveToDisk((void *)newLinkedList, sizeof(LL)));
+
         BPlusTreeNode *newRoot = new BPlusTreeNode(maxKeys);
         newRoot->isLeaf = true;
         newRoot->numKeys = 1;
         newRoot->keys[0] = key;
-        newRoot->pointers[0] = address;
+        newRoot->pointers[0] = LLAddress;
 
         this->rootNode = newRoot; // Initialising B+ Tree root node
         // index->saveToDisk(newRoot, nodeSize);
-
     }
     // Traverse B+ Tree to find location to insert key
     else
@@ -92,23 +98,38 @@ void BPlusTree::insert(Address *address, float key)
         // Leaf node is not filled
         if (current->numKeys < maxKeys)
         {
-            BPlusTreeNode *nextNodeAdd = (BPlusTreeNode *)current->pointers[current->numKeys];
+            BPlusTreeNode *nextNodeAddress = (BPlusTreeNode *)current->pointers[current->numKeys];
             int i = 0;
             while (key > current->keys[i] && i < current->numKeys)
             {
                 i++;
             }
-            for (int j = current->numKeys; j > i; j--)
-            {
-                current->keys[j] = current->keys[j - 1];
-                current->pointers[j] = current->pointers[j - 1];
+            if (current->keys[i] == key)
+            { // Check if duplicate key. If so, a linked list would have been created
+                Address *LLAddress = (Address *)current->pointers[i];
+                LL linkedList = *(LL *)disk->loadFromDisk(*LLAddress, sizeof(LL));
+                linkedList.insert(address);
             }
+            else
+            {
+                for (int j = current->numKeys; j > i; j--)
+                {
+                    current->keys[j] = current->keys[j - 1];
+                    current->pointers[j] = current->pointers[j - 1];
+                }
 
-            current->keys[i] = key;
-            current->pointers[i] = address;
+                // Creating a new Linked List for each new key
+                LLNode *newLinkedListNode = new LLNode(address);
+                LL *newLinkedList = new LL(newLinkedListNode, key);
+                // Storing the header of the linked list into Disk
+                Address *LLAddress = new Address(disk->saveToDisk((void *)newLinkedList, sizeof(LL)));
 
-            current->numKeys++;
-            current->pointers[current->numKeys] = nextNodeAdd;
+                current->keys[i] = key;
+                current->pointers[i] = LLAddress;
+
+                current->numKeys++;
+                current->pointers[current->numKeys] = nextNodeAddress;
+            }
         }
         // Leaf node is filled
         else
@@ -118,8 +139,21 @@ void BPlusTree::insert(Address *address, float key)
 
             for (int i = 0; i < maxKeys; i++)
             {
+                if (current->keys[i] == key)
+                { // Check if duplicate key. If so, a linked list would have been created
+                    Address *LLAddress = (Address *)current->pointers[i];
+                    LL linkedList = *(LL *)disk->loadFromDisk(*LLAddress, sizeof(LL));
+                    linkedList.insert(address);
+                    return;
+                }
                 tempNode[i] = current->keys[i];
             }
+
+            // Creating a new Linked List for each new key
+            LLNode *newLinkedListNode = new LLNode(address);
+            LL *newLinkedList = new LL(newLinkedListNode, key);
+            // Storing the header of the linked list into Disk
+            Address *LLAddress = new Address(disk->saveToDisk((void *)newLinkedList, sizeof(LL)));
 
             int newKeyIndex = 0;
 
@@ -168,7 +202,7 @@ void BPlusTree::insert(Address *address, float key)
                     if (tempKey == key)
                     {
                         current->keys[currentIndex] = key;
-                        current->pointers[currentIndex] = address;
+                        current->pointers[currentIndex] = LLAddress;
                         currentIndex--;
                     }
                     else
@@ -184,7 +218,7 @@ void BPlusTree::insert(Address *address, float key)
                     if (tempKey == key)
                     {
                         newNode->keys[newIndex] = key;
-                        newNode->pointers[newIndex] = address;
+                        newNode->pointers[newIndex] = LLAddress;
                         newIndex--;
                     }
                     else
