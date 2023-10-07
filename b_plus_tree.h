@@ -39,8 +39,16 @@ class BPlusTree
         void removeLL(Address LLHeadAddress);
         void borrowOrMerge(BPlusTreeNode *cursor, BPlusTreeNode *parent, int leftSibling, int rightSibling);
 
+        // Insert a key into the tree
+        void insert(Address address, float key);
+
+        void restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);
+        
+        BPlusTreeNode* findParent(BPlusTreeNode *current, BPlusTreeNode *child);
+
         void displayLL(LL *LinkedList);
-          // Return height of tree
+        
+        // Return height of tree
         int getLevels() {
             return levels;
         }

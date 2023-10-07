@@ -12,11 +12,11 @@
 
 
 
-BPlusTreeNode::BPlusTreeNode(int maxKeys, std::size_t blockSize)
+BPlusTreeNode::BPlusTreeNode(int maxKeys)
 {
     
     // Initialise the number of keys
-    numOfKeys = 0;
+    //numOfKeys = 0;
 
     // Initialise isleaf as true at first.
     isLeaf = true;
@@ -35,7 +35,4 @@ BPlusTreeNode::BPlusTreeNode(int maxKeys, std::size_t blockSize)
             keys[i] = '\0';
         }
     }
-
-
-
 }
