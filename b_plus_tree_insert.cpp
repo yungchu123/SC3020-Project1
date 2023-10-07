@@ -24,7 +24,8 @@ void BPlusTree::insert(Address address, float key)
         newRoot->pointers[0] = LLAddress;
 
         this->rootNode = newRoot; // Initialising B+ Tree root node
-        // index->saveToDisk(newRoot, nodeSize);
+        this->numNodes = 1;
+        this->levels = 1;
     }
     // Traverse B+ Tree to find location to insert key
     else
@@ -139,6 +140,8 @@ void BPlusTree::insert(Address address, float key)
             BPlusTreeNode *newNode = new BPlusTreeNode(maxKeys);
             newNode->isLeaf = true;
 
+            this->numNodes++;
+
             // Splitting the numKeys between both currentNode and newNode
             current->numKeys = ceil((maxKeys + 1) / 2);
             newNode->numKeys = floor((maxKeys + 1) / 2);
@@ -195,7 +198,7 @@ void BPlusTree::insert(Address address, float key)
             // Update keys/ pointers that have been moved to newNode to NULL
             for (int i = current->numKeys; i < maxKeys; i++)
             {
-                current->keys[i] = -1;
+                current->keys[i] = '\0';
                 current->pointers[i] = nullptr;
             }
 
@@ -211,6 +214,8 @@ void BPlusTree::insert(Address address, float key)
                 newRoot->pointers[1] = newNode;
 
                 this->rootNode = newRoot;
+                this->numNodes++;
+                this->levels++;
             }
             else
             {
@@ -241,6 +246,7 @@ void BPlusTree::restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode 
         parentNode->keys[i] = newNodeSmallestKey;
         parentNode->pointers[i + 1] = childNode;
         parentNode->numKeys++;
+
     }
     else
     { // Parent Node is full --> Requires shifting of tree
@@ -297,6 +303,8 @@ void BPlusTree::restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode 
         BPlusTreeNode *newParentNode = new BPlusTreeNode(maxKeys);
         newParentNode->isLeaf = false;
 
+        this->numNodes++;
+
         // Splitting the numKeys between both parentNode and newParentNode
         parentNode->numKeys = ceil(maxKeys / 2);
         newParentNode->numKeys = floor(maxKeys / 2);
@@ -347,6 +355,8 @@ void BPlusTree::restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode 
             newRoot->pointers[1] = newParentNode;
 
             this->rootNode = newRoot;
+            this->numNodes ++;
+            this->levels ++;
         }
         else
         {
