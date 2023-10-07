@@ -9,9 +9,6 @@
 #include <string>
 #include <cstddef>
 
-
-
-
 BPlusTreeNode::BPlusTreeNode(int maxKeys)
 {
     
@@ -27,12 +24,15 @@ BPlusTreeNode::BPlusTreeNode(int maxKeys)
     // Initialise the pointers to an Address
     pointers = new void* [maxKeys + 1];
 
-    for (int i = 0; i < maxKeys + 1; i++)
+    for (int i = 0; i < maxKeys; i++)
     {
         // Initialise all keys as NULL
-        if (i != maxKeys)
-        {
-            keys[i] = '\0';
-        }
+        keys[i] = '\0';
+    }
+
+    for (int i = 0; i < maxKeys + 1; i++)
+    {
+        // Initialise all pointers as NULL
+        pointers[i] = nullptr;
     }
 }
