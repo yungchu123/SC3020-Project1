@@ -3,62 +3,56 @@
 
 #include "types.h"
 #include "memory_pool.h"
+#include"b_plus_tree_node.h"
+#include "linked_list_node.h"
 
 #include <cstddef>
 #include <array>
 
-class Node
-{
-    private:
-        Address* addressOfNode; // Address of the node
-        int numOfKeys; // The current number of keys in the node
-        bool isLeaf; // an indicator that indicates whether it is a leaf node or not
-        float *keys; // Pointer to an array of keys that the Node holds
-        Address *pointers; // Pointer to an array of Address structs for other nodes it is pointing to
-        friend class BPlusTree; //lets bplustree class assess this class' private variables
 
-    public:
-        Node(int maxKeys, std::size_t blockSize); // Constructor class for Node
+using namespace std;
 
-        bool getIsLeaf(){
-            return isLeaf;
-        }
-
-        int getNumOfKeys(){
-            return numOfKeys;
-        }
-
-        float* getKeys(){
-            return keys;
-        }
-
-        Address* getPointers(){
-            return pointers;
-        }
-};
 
 class BPlusTree
 {
     private:
-        MemoryPool *disk; 
-        MemoryPool *index; 
-        void* addressOfRootNode; // Address of the root node
-        Node *rootOfTree; // Pointer to root's address in the Main Memory
+        // Address* addressOfRootNode; // Address of the root node
+        BPlusTreeNode *rootOfTree; // Pointer to root's address in the Main Memory
         int levels; // The number of levels in the B Plus Tree
         int numNodes; // The number of nodes in the B Plus Tree
         size_t sizeOfNode; // The size of a Node in the B Plus Tree
-        size_t nodeBufferSize;
-        int maxKeys;
+        size_t nodeBufferSize; // The remaining space left in a node to store keys and pointers after accouting for the isLeaf bool and numOfKeys int
+        int maxKeys; // The maximum number of keys that can be stored in the nod
+        MemoryPool *disk; // The disk that contains the data
+        void *parentDiskAddress;
+        void *cursorDiskAddress;
 
 
     public:
-        BPlusTree(std::size_t blockSize, MemoryPool *disk);
-        void search(float lowerBoundKey, float upperBoundKey);
-        int remove(double minValue, double maxValue);
-        void removeInternal(float key, Node *cursorDiskAddress, Node *childDiskAddress);
-        void removeLL(Address LLHeadAddress);
-        void borrowOrMerge(Node *cursor, Node *parent, int leftSibling, int rightSibling);
+        BPlusTree(std::size_t blockSize, MemoryPool *disk); // Constructor class for BPlusTree
+        void search(float lowerBoundKey, float upperBoundKey); // search function, taking in lowerBoundKey and upperBoundKey
+        void displayNode(BPlusTreeNode *Node);
+        void displayTree(BPlusTreeNode *node, int level);
+
+        BPlusTreeNode* findParent(BPlusTreeNode *current, BPlusTreeNode *child);
+        void remove(double minValue, double maxValue);
+        void removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);
+        void displayLL(LL *LinkedList);
+          // Return height of tree
+        int getLevels() {
+            return levels;
+        }
+
+        // Return number of nodes
+        int getNumNodes() {
+            return numNodes;
+        }
+
+        // Return maximum number of keys in a node
+        int getMaxKeys() {
+            return maxKeys;
+        }
+    
 };
 
 #endif
-
