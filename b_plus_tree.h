@@ -42,7 +42,7 @@ class BPlusTree
         // Insert a key into the tree
         void insert(Address address, float key);
 
-        void restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);
+        void restructureTree(float x, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);
         
         BPlusTreeNode* findParent(BPlusTreeNode *current, BPlusTreeNode *child);
 
@@ -63,6 +63,11 @@ class BPlusTree
         // Return maximum number of keys in a node
         int getMaxKeys() {
             return maxKeys;
+        }
+
+        // Return Address of root node
+        BPlusTreeNode* getRootAddress(){
+            return rootOfTree;
         }
 };
 

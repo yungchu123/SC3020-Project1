@@ -30,7 +30,6 @@ private:
     LLNode *head;
     float key;
     int numRecords;
-    friend class LL;
 
 public:
     LL(LLNode *head, float key);

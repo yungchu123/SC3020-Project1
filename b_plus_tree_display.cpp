@@ -17,7 +17,23 @@ void BPlusTree::displayNode(BPlusTreeNode* node)
 {
     // Print out all contents in the Node as as |Pointer|Key|Pointer
     std::cout << "|";
-
+    
+    for (int i = 0; i < this->maxKeys; i++){
+        if (node->pointers[i] != nullptr){
+            std::cout << node->pointers[i] << "|";
+        } else {
+            std::cout << "-" << "|";
+        }
+        
+        std::cout << node->keys[i] << "|";
+    }
+    if (node->pointers[maxKeys] != nullptr){
+            std::cout << node->pointers[maxKeys] << "|";
+        } else {
+            std::cout << "-" << "|";
+        }
+    
+    /***
     for (int i = 0; i < node->numKeys; i++)
     {
         address = node->pointers[i];
@@ -59,7 +75,7 @@ void BPlusTree::displayNode(BPlusTreeNode* node)
             }
         }
     }
-
+    ***/
     std::cout << endl;
 }
 

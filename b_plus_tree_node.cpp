@@ -19,19 +19,13 @@ BPlusTreeNode::BPlusTreeNode(int maxKeys)
 
     // Array for keys
     keys = new float[maxKeys];
+    for (int i = 0; i < maxKeys; i++){
+        keys[i] = '\0';
+    }
 
     // Initialise the pointers to an Address
     pointers = new void* [maxKeys + 1];
-
-    for (int i = 0; i < maxKeys + 1; i++)
-    {
-        // Initialise all keys as NULL
-        if (i != maxKeys)
-        {
-            keys[i] = '\0';
-        }
+    for (int i = 0; i <= maxKeys; i++){
+        pointers[i] = nullptr;
     }
-
-
-
 }

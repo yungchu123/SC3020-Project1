@@ -7,6 +7,7 @@
 #include <iostream>
 using namespace std;
 
+/***
 // each b+ tree node is the size of one block
 // so currently 6 keys in 1 node at initialisation
 // should be deleting 580 records
@@ -695,7 +696,7 @@ void BPlusTree::borrowOrMerge(Node* cursor, Node* parent, int leftSibling, int r
         index->deallocate(rightNodeDiskAddress, sizeOfNode);
     }
 }
-
+***/
 // need to bear in mind that other leaf nodes could have keys that fall within the range
 // found leaf nodes with gameRecord.FG_PCT_home <= threshold
 // for each leaf node

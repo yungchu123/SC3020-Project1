@@ -40,18 +40,17 @@ int main()
 
     std::vector<GameRecord> gameRecordList;
 
-    // Initialising B+ Tree
-    BPlusTree tree = BPlusTree(BLOCKSIZE, &disk);
+    
 
     if (datafile.is_open())
     {
         std::string line;
         int recordNum = 0;
-
+        
         // Skip the header line
         getline(datafile, line);
 
-        while (getline(datafile, line) && recordNum < 50)
+        while (getline(datafile, line))
         {
             GameRecord gameRecord;
             std::stringstream ss(line);
@@ -61,12 +60,11 @@ int main()
             gameRecordList.push_back(gameRecord);
 
             // insert record to database
-            Address* tempAddress = new Address;
-            *tempAddress = disk.saveToDisk(&gameRecord, sizeof(GameRecord));
+            Address tempAddress = disk.saveToDisk(&gameRecord, sizeof(GameRecord));
             
             // build b+ tree as we insert records
             std::cout << "Key number = " << recordNum+1 << ": ";
-            tree.insert(tempAddress, gameRecord.PTS_home);
+            tree.insert(tempAddress, gameRecord.FG_PCT_home);
 
             recordNum++;
         }
@@ -102,7 +100,7 @@ int main()
     std::cout << "Number of nodes of the B+ tree : "<<tree.getNumNodes()<< std::endl;
     std::cout << "Height of the B+ tree          : "<<tree.getLevels()<< std::endl;
     std::cout << "Root nodes and child nodes :"<< std::endl;
-    // tree.display(tree.getRoot(),1);
+    tree.displayTree(tree.getRootAddress(),1);
     std::cout << std::endl;
 
     return 0;
