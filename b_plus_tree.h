@@ -42,13 +42,15 @@ class BPlusTree
     private:
         MemoryPool *disk; 
         MemoryPool *index; 
-        void* addressOfRootNode; // Address of the root node
+        Address* addressOfRootNode; // Address of the root node
         Node *rootOfTree; // Pointer to root's address in the Main Memory
         int levels; // The number of levels in the B Plus Tree
         int numNodes; // The number of nodes in the B Plus Tree
         size_t sizeOfNode; // The size of a Node in the B Plus Tree
         size_t nodeBufferSize;
         int maxKeys;
+        void *parentDiskAddress;
+        void *cursorDiskAddress;
 
 
     public:
