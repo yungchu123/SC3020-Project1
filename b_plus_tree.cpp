@@ -72,10 +72,8 @@ Node::Node(int maxKeys, std::size_t blockSize)
         // Initialise all keys as NULL
         if (i != maxKeys)
         {
-            keys[i] = NULL;
+            keys[i] = '\0';
         }
     }
-
-
 
 }

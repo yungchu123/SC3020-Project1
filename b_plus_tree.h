@@ -54,7 +54,6 @@ class BPlusTree
     public:
         BPlusTree(std::size_t blockSize, MemoryPool *disk);
         void search(float lowerBoundKey, float upperBoundKey);
-
         int remove(double minValue, double maxValue);
         void removeInternal(float key, Node *cursorDiskAddress, Node *childDiskAddress);
         void removeLL(Address LLHeadAddress);
@@ -62,3 +61,4 @@ class BPlusTree
 };
 
 #endif
+
