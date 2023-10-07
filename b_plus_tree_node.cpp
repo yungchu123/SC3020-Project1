@@ -16,7 +16,7 @@ BPlusTreeNode::BPlusTreeNode(int maxKeys)
 {
     
     // Initialise the number of keys
-    //numOfKeys = 0;
+    numKeys = 0;
 
     // Initialise isleaf as true at first.
     isLeaf = true;
