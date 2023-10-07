@@ -1,4 +1,4 @@
-#include "./memory_pool.h"
+#include "memory_pool.h"
 #include "types.h"
 #include "b_plus_tree.h"
 #include "b_plus_tree_node.h"
@@ -88,9 +88,9 @@ int main()
     // std::cout << "Size of actual index data stored --- " << index.getActualSizeUsed() << endl;
     //std::cout << "Size of record blocks --- " << disk.getSizeUsed() << std::endl;
     // std::cout << "Size of index blocks --- " << index.getSizeUsed() << endl;
-    // std::cout <<"Total number of blocks   : "<<disk.getAllocated() + index.getAllocated()<<endl;
-    // std::cout <<"Actual size of database : "<<disk.getActualSizeUsed() + index.getActualSizeUsed()<<endl;
-    // std::cout <<"Size of database (size of all blocks): "<<disk.getSizeUsed()+index.getSizeUsed()<<endl;
+    // std::cout <<"Total number of blocks   : "<< disk.getAllocated() + index.getAllocated()<<endl;
+    // std::cout <<"Actual size of database : "<< disk.getActualSizeUsed() + index.getActualSizeUsed()<<endl;
+    //std::cout <<"Size of database (size of all blocks): "<<disk.getSizeUsed()<< std::endl;
 
 
     return 0;

@@ -1,45 +1,81 @@
 #include "b_plus_tree.h"
-#include "b_plus_tree_node.h"
-#include "linked_list_node.h"
 #include "types.h"
+#include "memory_pool.h"
 
-#include <cmath>
 #include <iostream>
+#include <string>
+#include <cstddef>
+
+using namespace std;
 
 BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
 {
-    // Get size left for keys and pointers in a node after accounting for node's isLeaf and numKeys attributes.
-    size_t nodeBufferSize = blockSize - sizeof(bool) - sizeof(int);
+    // Initialise root node of the Tree
+    addressOfRootNode = new Address;
+    addressOfRootNode->blockAddress = nullptr;
+    addressOfRootNode->offset = blockSize;
 
-    // Set max keys available in a node. Each key is a float, each pointer is a struct of {void *blockAddress, short int offset}.
-    // Therefore, each key is 4 bytes. Each pointer is around 16 bytes.
+    // Initialise root, root leads to the address of the root node of the B+ Tree.
+    rootOfTree = nullptr;
 
-    // Initialize node buffer with a pointer. P | K | P , always one more pointer than keys.
-    size_t sum = sizeof(Address);
+    // Initialise the number of levels of B+ Tree
+    levels = 0;
+
+    // Initialise the number of nodes in the B+ Tree as 0.
+    numNodes = 0;
+
+    // Initialise node size to block size
+    sizeOfNode = blockSize;
+  
+    // Initialize disk space
+    this->disk = disk;
+
+    // Size that is used to store the keys and pointers, after storing the bool isLeaf and int numOfKeys.
+    nodeBufferSize = blockSize - sizeof(bool) - sizeof(int);
+
+    size_t sizeExludingLastKeyPointer = sizeof(Address);
     maxKeys = 0;
 
-    // Try to fit as many pointer key pairs as possible into the node block.
-    while (sum + sizeof(Address) + sizeof(float) <= nodeBufferSize)
+    while(sizeExludingLastKeyPointer + sizeof(Address) + sizeof(float) <= nodeBufferSize)
     {
-        sum += (sizeof(Address) + sizeof(float));
+        sizeExludingLastKeyPointer += (sizeof(Address) + sizeof(float));
         maxKeys += 1;
     }
 
     if (maxKeys == 0)
     {
-        throw std::overflow_error("Error: Keys and pointers too large to fit into a node!");
+        throw std::overflow_error("Error: Keys and Pointers cannot fit into the Node.");
     }
 
-    // Initialize root to NULL
-    rootNode = nullptr;
+}
 
-    // Set node size to be equal to block size.
-    nodeSize = blockSize;
 
-    // Initialize initial variables
-    levels = 0;
-    numNodes = 0;
+BPlusTreeNode::BPlusTreeNode(int maxKeys, std::size_t blockSize)
+{
+    // Intialise the root of node
+    // root leads to the first pointer in the node.
+    addressOfNode = new Address;
+    addressOfNode->blockAddress = nullptr;
+    addressOfNode->offset = blockSize;
+    
+    // Initialise the number of keys
+    numOfKeys = 0;
 
-    // Initialize disk space
-    this->disk = disk;
+    // Initialise isleaf as true at first.
+    isLeaf = true;
+
+    // Initialise the keys in the array.
+    keys = new float[maxKeys];
+
+    // Initialise the pointers to an Address
+    pointers = new Address[maxKeys + 1];
+
+    for (int i = 0; i < maxKeys + 1; i++)
+    {
+        // Initialise all keys as NULL
+        if (i != maxKeys)
+        {
+            keys[i] = '\0';
+        }
+    }
 }
