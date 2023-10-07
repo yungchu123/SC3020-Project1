@@ -13,6 +13,16 @@ private:
 
 public:
     LLNode(Address recordAddress);
+
+    Address getRecordAddress()
+    {
+        return recordAddress;
+    }
+
+    LLNode* getNext()
+    {
+        return next;
+    }
 };
 
 class LL
