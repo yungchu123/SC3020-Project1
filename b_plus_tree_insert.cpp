@@ -64,7 +64,6 @@ void BPlusTree::insert(Address address, float key)
         // Leaf node is not filled
         if (current->numKeys < maxKeys)
         {
-            BPlusTreeNode *nextNodeAddress = (BPlusTreeNode *)current->pointers[current->numKeys];
             int i = 0;
             while (key > current->keys[i] && i < current->numKeys)
             {
@@ -75,6 +74,7 @@ void BPlusTree::insert(Address address, float key)
                 Address *LLAddress = (Address *)current->pointers[i];
                 LL linkedList = *(LL *)disk->loadFromDisk(*LLAddress, sizeof(LL));
                 linkedList.insert(address);
+                return;
             }
             else
             {
@@ -94,14 +94,14 @@ void BPlusTree::insert(Address address, float key)
                 current->pointers[i] = LLAddress;
 
                 current->numKeys++;
-                current->pointers[current->numKeys] = nextNodeAddress;
             }
         }
         // Leaf node is filled
         else
         {
             // Arranging the node in ascending order, after inserting new key
-            int tempNode[maxKeys + 1];
+            float tempKeys[maxKeys + 1];
+            void* tempPointers[maxKeys + 1];
 
             for (int i = 0; i < maxKeys; i++)
             {
@@ -112,7 +112,8 @@ void BPlusTree::insert(Address address, float key)
                     linkedList.insert(address);
                     return;
                 }
-                tempNode[i] = current->keys[i];
+                tempKeys[i] = current->keys[i];
+                tempPointers[i] = current->pointers[i];
             }
 
             // Creating a new Linked List for each new key
@@ -123,22 +124,18 @@ void BPlusTree::insert(Address address, float key)
 
             int newKeyIndex = 0;
 
-            while (newKeyIndex < maxKeys)
+            while (key > tempKeys[newKeyIndex] && newKeyIndex < maxKeys)
             {
-                if (key > tempNode[newKeyIndex])
-                {
-                    newKeyIndex++;
-                }
-                else
-                {
-                    break;
-                }
+                newKeyIndex++;
             }
+
             for (int j = maxKeys; j > newKeyIndex; j--)
             {
-                tempNode[j] = tempNode[j - 1];
+                tempKeys[j] = tempKeys[j - 1];
+                tempPointers[j] = tempPointers[j-1];
             }
-            tempNode[newKeyIndex] = key;
+            tempKeys[newKeyIndex] = key;
+            tempPointers[newKeyIndex] = LLAddress;
 
             // Creating new leaf Node
             BPlusTreeNode *newNode = new BPlusTreeNode(maxKeys);
@@ -151,52 +148,29 @@ void BPlusTree::insert(Address address, float key)
             newNode->numKeys = floor((maxKeys + 1) / 2);
 
             // Setting the last pointer (, which points to the next node)
-            newNode->pointers[newNode->numKeys] = current->pointers[maxKeys];
-            current->pointers[current->numKeys] = newNode;
+            newNode->pointers[maxKeys] = current->pointers[maxKeys];
+            current->pointers[maxKeys] = newNode;
+
+            std::cout<<"CurrentNode"<<std::endl;
+            this->displayNode(current);
+            std::cout << std::endl;
+            std::cout<<"NewNode"<<std::endl;
+            this->displayNode(newNode);
+            std::cout<<"End"<<std::endl;
 
             // Rearranging the nodes according to the ascending order
-
-            int currentIndex = (current->numKeys) - 1; // Maintain the index for the updated currentNode
-            int currentOldIndex = maxKeys - 1;         // Maintain the original index for key/pointers in currentNode
-            int newIndex = (newNode->numKeys) - 1;     // Maintain the index for the updated newNode
-
-            for (int i = maxKeys; i >= 0; i--)
+            int i;
+            for (i = 0; i < current->numKeys; i++)
             {
+                current->keys[i] = tempKeys[i];
+                current->pointers[i] = tempPointers[i];
+            }
 
-                int tempKey = tempNode[i];
-
-                if (i < ((maxKeys + 1) / 2))
-                { // Will be in currentNode
-                    if (tempKey == key)
-                    {
-                        current->keys[currentIndex] = key;
-                        current->pointers[currentIndex] = LLAddress;
-                        currentIndex--;
-                    }
-                    else
-                    {
-                        current->keys[currentIndex] = current->keys[currentOldIndex];
-                        current->pointers[currentIndex] = current->pointers[currentOldIndex];
-                        currentIndex--;
-                        currentOldIndex--;
-                    }
-                }
-                else
-                { // Will be in newNode
-                    if (tempKey == key)
-                    {
-                        newNode->keys[newIndex] = key;
-                        newNode->pointers[newIndex] = LLAddress;
-                        newIndex--;
-                    }
-                    else
-                    {
-                        newNode->keys[newIndex] = current->keys[currentOldIndex];
-                        newNode->pointers[newIndex] = current->pointers[currentOldIndex];
-                        newIndex--;
-                        currentOldIndex--;
-                    }
-                }
+            // Then, the new leaf node. Note we keep track of the i index, since we are using the remaining keys and pointers.
+            for (int j = 0; j < newNode->numKeys; i++, j++)
+            {
+                newNode->keys[j] = tempKeys[i];
+                newNode->pointers[j] = tempPointers[i];
             }
 
             // Update keys/ pointers that have been moved to newNode to NULL
@@ -205,6 +179,13 @@ void BPlusTree::insert(Address address, float key)
                 current->keys[i] = '\0';
                 current->pointers[i] = nullptr;
             }
+
+            std::cout<<"CurrentNode"<<std::endl;
+            this->displayNode(current);
+            std::cout << std::endl;
+            std::cout<<"NewNode"<<std::endl;
+            this->displayNode(newNode);
+            std::cout<<"End"<<std::endl;
 
             // Adjusting/ Creating parent node
             // Check if currentNode == root
@@ -230,25 +211,27 @@ void BPlusTree::insert(Address address, float key)
     }
 }
 
-void BPlusTree::restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode *childNode)
+void BPlusTree::restructureTree(float key, BPlusTreeNode *parentNode, BPlusTreeNode *childNode)
 {
-    int newNodeSmallestKey = x;
 
     if (parentNode->numKeys < maxKeys)
     { // Parent node has empty space to accomodate a new childNode
         int i = 0;
         // Getting the position to insert the new childNode
-        while (newNodeSmallestKey > parentNode->keys[i] && i < parentNode->numKeys)
+        while (key > parentNode->keys[i] && i < parentNode->numKeys)
         {
             i++;
         }
         for (int j = parentNode->numKeys; j > i; j--)
         {
-            parentNode->keys[j] = parentNode->keys[j - 1];
-            parentNode->pointers[j + 1] = parentNode->pointers[j];
+            parentNode->keys[j] = parentNode->keys[j-1];
+        }
+        for (int j = parentNode->numKeys+1; j > i + 1; j--)
+        {
+            parentNode->pointers[j] = parentNode->pointers[j-1];
         }
 
-        parentNode->keys[i] = newNodeSmallestKey;
+        parentNode->keys[i] = key;
         parentNode->pointers[i + 1] = childNode;
         parentNode->numKeys++;
 
@@ -258,51 +241,39 @@ void BPlusTree::restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode 
         float tempKeys[maxKeys + 1];
         void *tempPointers[maxKeys + 2];
 
-        bool flag = false;
-        int indexNewKey = -1;
-
         // Inserting values into tempKeys
+        for (int i = 0; i < maxKeys; i++)
+        {
+            tempKeys[i] = parentNode->keys[i];
+        }
+
+        // Inserting values into tempPointers
         for (int i = 0; i < maxKeys + 1; i++)
         {
-            if (newNodeSmallestKey > parentNode->keys[i])
-            { // When parentKey < new key
-                tempKeys[i] = parentNode->keys[i];
-            }
-            else if (!flag) // First instance when parentKey > new Key --> this the position where the new key is to be placed
-            {
-                tempKeys[i] = newNodeSmallestKey;
-                indexNewKey = i;
-                flag = true;
-            }
-            else
-            { // Copying the remaining keys from parentNode to tempKeys
-                tempKeys[i] = parentNode->keys[i - 1];
-            }
+            tempPointers[i] = parentNode->pointers[i];
         }
 
-        // inserting values into tempPointers
-        flag = false;
-        for (int i = 0; i < maxKeys + 2; i++)
+        // Find index to insert key
+        int i = 0;
+        while (key > tempKeys[i] && i < maxKeys)
         {
-            if (i < indexNewKey)
-            { // Copying pointers before the inserted key
-                tempPointers[i] = parentNode->pointers[i];
-            }
-            else if (i == indexNewKey)
-            { // Copying pointer just before inserted key
-                tempPointers[i] = parentNode->pointers[i];
-                flag = true;
-            }
-            else if (flag)
-            { // Inserting pointer to child node
-                tempPointers[i] = childNode;
-                flag = false;
-            }
-            else
-            { // Copying the remaining pointers from parentNode to tempPointers
-                tempPointers[i] = parentNode->pointers[i - 1];
-            }
+            i++;
         }
+
+        // Swap all elements higher than index backwards to fit new key.
+        int j;
+        for (int j = maxKeys; j > i; j--)
+        {
+            tempKeys[j] = tempKeys[j - 1];
+        }
+        tempKeys[i] = key;
+
+        // Move all pointers back to fit new child's pointer as well.
+        for (int j = maxKeys + 1; j > i + 1; j--)
+        {
+            tempPointers[j] = tempPointers[j - 1];
+        }
+        tempPointers[i+1] = childNode;
 
         // Creating newParentNode
         BPlusTreeNode *newParentNode = new BPlusTreeNode(maxKeys);
@@ -333,20 +304,22 @@ void BPlusTree::restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode 
             }
             else
             {
-                parentNode->keys[i] = -1;
+                parentNode->keys[i] = '\0';
             }
         }
-        for (int i = 0; i < maxKeys + 1; i++)
+        for (int i = parentNode->numKeys + 1; i < maxKeys + 1; i++)
         {
-            if (i < (parentNode->numKeys + 1))
-            {
-                parentNode->pointers[i] = tempPointers[i];
-            }
-            else
-            {
-                parentNode->pointers[i] = nullptr;
-            }
+            parentNode->pointers[i] = nullptr;
+            
         }
+        parentNode->pointers[parentNode->numKeys] = childNode;
+
+        std::cout<<"ParentNode"<<std::endl;
+        this->displayNode(parentNode);
+        std::cout << std::endl;
+        std::cout<<"NewParentNode"<<std::endl;
+        this->displayNode(newParentNode);
+        std::cout<<"End"<<std::endl;
 
         // Adjusting/ Creating parent node
         // Check if currentNode == root

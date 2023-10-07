@@ -42,7 +42,7 @@ class BPlusTree
         // Insert a key into the tree
         void insert(Address address, float key);
 
-        void restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);
+        void restructureTree(float x, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);
         
         BPlusTreeNode* findParent(BPlusTreeNode *current, BPlusTreeNode *child);
 
