@@ -1,32 +1,69 @@
 #ifndef B_PLUS_TREE_H
 #define B_PLUS_TREE_H
 
-#include "memory_pool.h"
-#include "b_plus_tree_node.h"
 #include "types.h"
+#include "memory_pool.h"
+#include"b_plus_tree_node.h"
+#include "linked_list_node.h"
+
+#include <cstddef>
+#include <array>
+
+using namespace std;
+
 
 class BPlusTree
 {
-private:
-    /* data */
-    MemoryPool *disk;        // Pointer to a memory pool for data blocks.
-    BPlusTreeNode *rootNode; // Pointer to the main memory root
-    int maxKeys;             // Maximum keys in a node.
-    int levels;              // Number of levels in this B+ Tree.
-    int numNodes;            // Number of nodes in this B+ Tree.
-    std::size_t nodeSize;    // Size of a node = Size of block.
-public:
-    // Constructor
-    BPlusTree(std::size_t blockSize, MemoryPool *disk);
+    private:
+        // Address* addressOfRootNode; // Address of the root node
+        BPlusTreeNode *rootOfTree; // Pointer to root's address in the Main Memory
+        int levels; // The number of levels in the B Plus Tree
+        int numNodes; // The number of nodes in the B Plus Tree
+        size_t sizeOfNode; // The size of a Node in the B Plus Tree
+        size_t nodeBufferSize; // The remaining space left in a node to store keys and pointers after accouting for the isLeaf bool and numOfKeys int
+        int maxKeys; // The maximum number of keys that can be stored in the nod
+        MemoryPool *disk; // The disk that contains the data
+        void *parentDiskAddress;
+        void *cursorDiskAddress;
 
-    // Inserting a new key
-    void insert(Address address, float key);
 
-    // Shifting layer when inserting new records (if necessary)
-    void restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);
+    public:
+        BPlusTree(std::size_t blockSize, MemoryPool *disk); // Constructor class for BPlusTree
+        std::vector<float> search(float lowerBoundKey, float upperBoundKey); // search function, taking in lowerBoundKey and upperBoundKey
+        void displayNode(BPlusTreeNode *Node);
+        void displayTree(BPlusTreeNode *node, int level);
 
-    // Locate parent node
-    BPlusTreeNode *findParent(BPlusTreeNode *current, BPlusTreeNode *child);
+        int remove(double minValue, double maxValue);
+        void removeInternal(float key, BPlusTreeNode *cursorDiskAddress, BPlusTreeNode *childDiskAddress);
+        void removeLL(Address LLHeadAddress);
+
+        void borrowOrMerge(BPlusTreeNode *cursor, BPlusTreeNode *parent, int leftSibling, int rightSibling);
+
+        // Insert a key into the tree
+        void insert(Address address, float key);
+
+        void restructureTree(int x, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);
+        
+        BPlusTreeNode* findParent(BPlusTreeNode *current, BPlusTreeNode *child);
+
+        void displayLL(LL *LinkedList);
+
+        void displayBlock(Address *address);
+        
+        // Return height of tree
+        int getLevels() {
+            return levels;
+        }
+
+        // Return number of nodes
+        int getNumNodes() {
+            return numNodes;
+        }
+
+        // Return maximum number of keys in a node
+        int getMaxKeys() {
+            return maxKeys;
+        }
 };
 
 #endif
