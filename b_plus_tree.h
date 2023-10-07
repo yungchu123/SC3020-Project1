@@ -40,7 +40,7 @@ class Node
 class BPlusTree
 {
     private:
-        Address* addressOfRootNode; // Address of the root node
+        void* addressOfRootNode; // Address of the root node
         Node *rootOfTree; // Pointer to root's address in the Main Memory
         int levels; // The number of levels in the B Plus Tree
         int numNodes; // The number of nodes in the B Plus Tree
