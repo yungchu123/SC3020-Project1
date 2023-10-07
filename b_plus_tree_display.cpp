@@ -1,4 +1,5 @@
 #include "b_plus_tree.h"
+#include "b_plus_tree_node.h"
 #include "types.h"
 
 #include <vector>
@@ -14,7 +15,6 @@ void* address;
 void BPlusTree::displayNode(BPlusTreeNode* node)
 {
     // Print out all contents in the Node as as |Pointer|Key|Pointer
-
     std::cout << "|";
 
     for (int i = 0; i < node->numOfKeys; i++)
@@ -58,16 +58,40 @@ void BPlusTree::displayNode(BPlusTreeNode* node)
             }
         }
     }
+
+    std::cout << endl;
 }
 
 
 // Display a block and its contents in the disk. Assume it's already loaded in main memory.
-void BPlusTree::displayBlock(void *blockAddress)
+void BPlusTree::displayTree(BPlusTreeNode* node, int level)
 {
-    // Load block into memory
-    void* block
 
+    // If tree exists, display all nodes.
+    if (node != nullptr)
+    {
+        for (int i = 0; i < levels; i++)
+        {
+            std::cout << "   ";
+        }
+        std::cout << "level" << level << ":";
 
+        displayNode(node);
+
+        if (node -> isLeaf != true)
+        {
+            for (int i = 0; i < (node->numOfKeys) + 1; i++)
+            {
+                node = (BPlusTreeNode* )node->pointers[i];
+                displayTree(node, level + 1);
+            }
+        }
+    }
+
+    else
+    {
+        std::cout << "B Plus Tree does not exist" ;
+    }
 }
 
 

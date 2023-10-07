@@ -1,4 +1,5 @@
 #include "b_plus_tree.h"
+#include "b_plus_tree_node.h"
 #include "types.h"
 #include "memory_pool.h"
 
@@ -8,12 +9,13 @@
 
 using namespace std;
 
+
 BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
 {
     // Initialise root node of the Tree
-    addressOfRootNode = new Address;
-    addressOfRootNode->blockAddress = nullptr;
-    addressOfRootNode->offset = blockSize;
+    // addressOfRootNode = new Address;
+    // addressOfRootNode->blockAddress = nullptr;
+    // addressOfRootNode->offset = blockSize;
 
     // Initialise root, root leads to the address of the root node of the B+ Tree.
     rootOfTree = nullptr;
@@ -44,38 +46,8 @@ BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
         throw std::overflow_error("Error: Keys and Pointers cannot fit into the Node.");
     }
 
-}
-
-
-Node::Node(int maxKeys, std::size_t blockSize)
-{
-    // Intialise the root of node
-    // root leads to the first pointer in the node.
-    addressOfNode = new Address;
-    addressOfNode->blockAddress = nullptr;
-    addressOfNode->offset = blockSize;
-    
-    // Initialise the number of keys
-    numOfKeys = 0;
-
-    // Initialise isleaf as true at first.
-    isLeaf = true;
-
-    // Array for keys
-    keys = new float[maxKeys];
-
-    // Initialise the pointers to an Address
-    pointers = new void* [maxKeys + 1];
-
-    for (int i = 0; i < maxKeys + 1; i++)
-    {
-        // Initialise all keys as NULL
-        if (i != maxKeys)
-        {
-            keys[i] = NULL;
-        }
-    }
-
-
+    this -> disk = disk;
 
 }
+
+

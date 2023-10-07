@@ -1,4 +1,5 @@
 #include "b_plus_tree.h"
+#include "b_plus_tree_node.h"
 #include "types.h"
 #include "memory_pool.h"
 #include "linked_list_node.h"
@@ -29,8 +30,6 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
        // (TO ADD CODE) Display the content of the index node.
 
         // std::cout << "Index node accessed. Content is -------";
-
-        
 
         while (current_node->isLeaf == false)
         {
@@ -118,26 +117,18 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                     if (i == current_node -> numOfKeys && current_node -> keys[i] < upperBoundKey)
                     {
                         // If there are no other leaf nodes left to explore
-                        if (current_node->pointers[maxKeys + 1] == nullptr)
+                        if (current_node->pointers[maxKeys] == nullptr)
                         {
                             // We can conclude that we have explored the range.
                             exploredRange = true;
                         }
 
                         // update the current_node as the next leaf node.
-                        current_node = (BPlusTreeNode *)(current_node->pointers[maxKeys + 1]);
+                        current_node = (BPlusTreeNode *)(current_node->pointers[maxKeys]);
                         
                     }
                 }
             }
-
-
-
-
-
-
-
-            
                 
         }
 
