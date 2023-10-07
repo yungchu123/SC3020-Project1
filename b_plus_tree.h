@@ -35,9 +35,9 @@ class BPlusTree
         void displayTree(BPlusTreeNode *node, int level);
 
         int remove(double minValue, double maxValue);
-        void removeInternal(float key, Node *cursorDiskAddress, Node *childDiskAddress);
+        void removeInternal(float key, BPlusTreeNode *cursorDiskAddress, BPlusTreeNode *childDiskAddress);
         void removeLL(Address LLHeadAddress);
-        void borrowOrMerge(Node *cursor, Node *parent, int leftSibling, int rightSibling);
+        void borrowOrMerge(BPlusTreeNode *cursor, BPlusTreeNode *parent, int leftSibling, int rightSibling);
 
         void displayLL(LL *LinkedList);
           // Return height of tree
