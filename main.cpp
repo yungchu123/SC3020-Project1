@@ -41,12 +41,12 @@ int main()
     std::ifstream datafile("games.txt");
 
     std::vector<GameRecord> gameRecordList;
-    
+    std::vector<Address> recordAddressList;
+    int recordNum = 0;
 
     if (datafile.is_open())
     {
         std::string line;
-        int recordNum = 0;
 
         // Skip the header line
         getline(datafile, line);
@@ -62,9 +62,7 @@ int main()
 
             // insert record to database
             Address tempAddress = disk.saveToDisk(&gameRecord, sizeof(GameRecord));
-
-            // build b+ tree as we insert records
-            // ...
+            recordAddressList.push_back(tempAddress);
 
             recordNum++;
         }
@@ -75,7 +73,8 @@ int main()
     // {
     //     std::cout << "ID: " << game.TEAM_ID_home << ", Points: " << game.PTS_home << ", Size: " << sizeof(game) << std::endl;
     // }
-
+    std::cout << gameRecordList[1].FG_PCT_home << std::endl;
+    std::cout << recordAddressList[1].blockAddress << std::endl;
     std::cout <<"=====================================Experiment 1=========================================="<< std::endl;
     std::cout << "Number of Records: " << disk.getActualSizeUsed() / sizeof(GameRecord) << std::endl;
     std::cout << "Size of a Record: " << sizeof(GameRecord) << std::endl;
@@ -94,6 +93,17 @@ int main()
     // std::cout <<"Actual size of database : "<< disk.getActualSizeUsed() + index.getActualSizeUsed()<<endl;
     //std::cout <<"Size of database (size of all blocks): "<<disk.getSizeUsed()<< std::endl;
 
+            /*
+    =============================================================
+    Experiment 2:
+
+    =============================================================
+    */
+
+    // Build the B+ tree from the records
+    for (int i = 0 ; i < 35 ; i++) {
+        tree.insert(recordAddressList[i], gameRecordList[i].FG_PCT_home); // FG_PCT_home is used as our primary key
+    }
 
     std::cout <<"=====================================Experiment 2=========================================="<< std::endl;
     std::cout << "Parameter n of the B+ tree     : "<<tree.getMaxKeys()<< std::endl;
