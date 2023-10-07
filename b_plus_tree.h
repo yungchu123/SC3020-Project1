@@ -30,7 +30,8 @@ class BPlusTree
 
     public:
         BPlusTree(std::size_t blockSize, MemoryPool *disk); // Constructor class for BPlusTree
-        std::vector<float>  search(float lowerBoundKey, float upperBoundKey); // search function, taking in lowerBoundKey and upperBoundKey
+        std::vector<Address>  search(float lowerBoundKey, float upperBoundKey); // search function, taking in lowerBoundKey and upperBoundKey
+        float AverageFG3_PCT_home(std::vector<Address> vectorOfAddress, MemoryPool* disk);
         void displayNode(BPlusTreeNode *Node);
         void displayNodeKeys(BPlusTreeNode* node);
         void displayTree(BPlusTreeNode *node, int level);

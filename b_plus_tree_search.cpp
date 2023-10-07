@@ -11,13 +11,13 @@
 
 using namespace std;
 
-std::vector<float>  BPlusTree::search(float lowerBoundKey, float upperBoundKey)
+std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey)
 {
     
     bool found = false;
     
-    // An Array that stores the FG3_PCT_home values returned from the addresses, so that we can calculate based on the values.
-    std::vector<float> values;
+    // An Array that stores the Addresses of the searched records, so that we can calculate values based on them.
+    std::vector<Address> listOfAddresses;
     
     // Tree is empty.
     if (rootOfTree == nullptr)
@@ -32,10 +32,10 @@ std::vector<float>  BPlusTree::search(float lowerBoundKey, float upperBoundKey)
         BPlusTreeNode *current_node = rootOfTree;
 
        // Display the content of the node.
+       std::cout << "Index Node accessed, Content is ----" << endl;
        displayNode(current_node);
 
         // std::cout << "Index node accessed. Content is -------";
-
         while (current_node->isLeaf == false)
         {
             // Iterate through each key in the current node and check which is the key of the lowest value that is bigger than the lower bound.
@@ -47,6 +47,7 @@ std::vector<float>  BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                     current_node = (BPlusTreeNode *) current_node -> pointers[i];
                     
                     // Display the content of the node.
+                    std::cout << "Index Node accessed, Content is ----" << endl;;
                     displayNode(current_node);
                     
                     break;
@@ -58,6 +59,7 @@ std::vector<float>  BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                     current_node = (BPlusTreeNode *) current_node -> pointers[i + 1];
             
                     // Display the content of the node.
+                    std::cout << "Index Node accessed, Content is ----" << endl;;
                     displayNode(current_node);
                     
                     break;
@@ -70,7 +72,7 @@ std::vector<float>  BPlusTree::search(float lowerBoundKey, float upperBoundKey)
             // We should keep searching until we reach a key that is more than the upperBoundKey.
             bool exploredRange = false;
 
-            Address* addressOfwithinBound;
+            Address* addressOfLLwithinBound;
 
             // while we have not found the key that is higher than the upperBoundKey
             while (exploredRange == false)
@@ -82,70 +84,90 @@ std::vector<float>  BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                     if (current_node -> keys[i] >= lowerBoundKey && current_node -> keys[i] <= upperBoundKey)
                     {
                         // If it is stored in a linked list, get the pointer to the linked list.
-                        Address* addressOfLLwithinBound = (Address*)current_node -> pointers[i];
+                        addressOfLLwithinBound = (Address*)current_node -> pointers[i];
                         LL linkedList = *(LL *)disk->loadFromDisk(*addressOfLLwithinBound, sizeof(LL));
 
+                        std::cout<< "hi" << endl;
+
                         // Get all the values in the linked list.
-                        for (int i = 0; i < linkedList.getNumRecords(); i++)
+                        LLNode* traversalNode = linkedList.getHead();
+                       
+                        int j = 0;
+                        //for (int i = 0; i < linkedList.getNumRecords(); i++)
+                        while (traversalNode != nullptr)
                         {
-                            // Enter the key into the values array for the number of records with the key.
-                            values.push_back(linkedList.getKey());
+                            // Enter the key into the listOfAddresses array for the number of records with the key.
+                            listOfAddresses.push_back(traversalNode->getRecordAddress());
+                            traversalNode = traversalNode -> getNext();
+                            std::cout<< "this is " << j << " iteration" << endl;
+
                         }
                         
-                        // ONLY CONSIDER THIS IF WE ARE NOT STORING IT IN A LINKED LIST.
-
-                        // // get the address of the node that the pointer is pointing to.
-                        // addressOfwithinBound = (Address *)current_node -> pointers[i];
-                        
-                        // // Load the data from the memory address that contains the lower bound key
-                        // void* dataInAddress = disk->loadFromDisk(*addressOfwithinBound, sizeof(GameRecord));
-
-                        // // Go to the address that the address is pointing towards and get the value of FG3_PCT_home
-                        // values.push_back(((GameRecord* )dataInAddress) ->FG3_PCT_home);
                     }
 
                     // if the key is bigger than the upperBoundKey, we can conclude the search.
                     if (current_node -> keys[i] > upperBoundKey)
                     {
                         exploredRange = true;
-                    }
-
-                    // if the last key in the current node is still lower than the upperBoundKey, we have to explore the next leaf node too.
-                    if (i == current_node -> numKeys && current_node -> keys[i] < upperBoundKey)
-                    {
-                        // If there are no other leaf nodes left to explore
-                        if (current_node->pointers[maxKeys] == nullptr)
-                        {
-                            // We can conclude that we have explored the range.
-                            exploredRange = true;
-                        }
-
-                        else
-                        {
-                            // update the current_node as the next leaf node.
-                            current_node = (BPlusTreeNode *)(current_node->pointers[maxKeys]);
-                            
-                            // Display the content of the node.
-                            displayNode(current_node);
-                        }
+                        break;
                     }
                 }
-            }
 
-            if (values.empty())
-            {
-                std::cout << "No keys in this range" << std::endl;
-                return values;
-            }
+                if (exploredRange) break;
 
-            else
-            {
+                // If there are no other leaf nodes left to explore
+                if (current_node->pointers[maxKeys] == nullptr)
+                {
+                    // We can conclude that we have explored the range.
+                    exploredRange = true;
+                }
+
+                else
+                {
+                    // update the current_node as the next leaf node.
+                    current_node = (BPlusTreeNode *)(current_node->pointers[maxKeys]);
+                    
+                    // Display the content of the node.
+                    std::cout << "Index Node accessed, Content is ----"<< endl;;
+                    displayNode(current_node);
+                }
                 
-                int sum = std::accumulate(values.begin(), values.end(), 0);
-                float average = static_cast<float>(sum) / values.size();
-                std::cout << "Average of keys is" << average << std::endl;
-                return values;
+                
+
+
             }
+
+            if (listOfAddresses.empty())
+            {
+                std::cout << "No records in this range" << std::endl;
+            }
+
+
+            return listOfAddresses;
         }
     }
 }
+
+float BPlusTree::AverageFG3_PCT_home(std::vector<Address> vectorOfAddress, MemoryPool* disk)
+{
+    // For the length of the vector
+    // access the address, get the value and store it in an array
+
+    std::vector<double> listOfFG3_PCT_home;
+    int length = vectorOfAddress.size();
+
+    for (int i = 0; i < length; i++)
+    {
+        Address address = vectorOfAddress[i];
+        GameRecord* returnedData = (GameRecord*)disk->loadFromDisk(address, sizeof(GameRecord));
+        listOfFG3_PCT_home.push_back(returnedData->FG3_PCT_home);
+    }
+
+    double sum = std::accumulate(listOfFG3_PCT_home.begin(), listOfFG3_PCT_home.end(), 0);
+    float average = static_cast<float>(sum) / listOfFG3_PCT_home.size();
+    std::cout << "Average of FG3_PCT_home for the selected range is " << average << std::endl;
+    return average;
+}
+
+
+
