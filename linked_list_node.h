@@ -26,6 +26,21 @@ public:
     LL(LLNode *head, float key);
 
     void insert(Address recordAddress);
+
+       LLNode* getHead()
+    {
+        return head;
+    }
+
+    int getNumRecords()
+    {
+        return numRecords;
+    }
+
+    float getKey()
+    {
+        return key;
+    }
 };
 
 #endif
