@@ -28,16 +28,19 @@ BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
 
     // Initialise node size to block size
     sizeOfNode = blockSize;
+  
+    // Initialize disk space
+    this->disk = disk;
 
     // Size that is used to store the keys and pointers, after storing the bool isLeaf and int numOfKeys.
     nodeBufferSize = blockSize - sizeof(bool) - sizeof(int);
 
-    size_t sizeExludingLastKeyPointer = sizeof(Address);
+    size_t sizeExludingLastKeyPointer = sizeof(void*);
     maxKeys = 0;
 
-    while(sizeExludingLastKeyPointer + sizeof(Address) + sizeof(float) <= nodeBufferSize)
+    while(sizeExludingLastKeyPointer + sizeof(void*) + sizeof(float) <= nodeBufferSize)
     {
-        sizeExludingLastKeyPointer += (sizeof(Address) + sizeof(float));
+        sizeExludingLastKeyPointer += (sizeof(void*) + sizeof(float));
         maxKeys += 1;
     }
 
@@ -46,10 +49,6 @@ BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
         throw std::overflow_error("Error: Keys and Pointers cannot fit into the Node.");
     }
 
-
     this -> disk = disk;
 
 }
-
-
-

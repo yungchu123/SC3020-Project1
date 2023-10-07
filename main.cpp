@@ -11,8 +11,6 @@
 
 int main()
 {
-    std::cout << "Hello world\n";
-
     // Initialise
     int BLOCKSIZE = 400;             // 400B
     int MEMORYPOOLSIZE = 500000000;  // 500MB
@@ -41,7 +39,9 @@ int main()
     std::ifstream datafile("games.txt");
 
     std::vector<GameRecord> gameRecordList;
-    
+
+    // Initialising B+ Tree
+    BPlusTree tree = BPlusTree(BLOCKSIZE, &disk);
 
     if (datafile.is_open())
     {
@@ -51,7 +51,7 @@ int main()
         // Skip the header line
         getline(datafile, line);
 
-        while (getline(datafile, line))
+        while (getline(datafile, line) && recordNum < 50)
         {
             GameRecord gameRecord;
             std::stringstream ss(line);
@@ -61,10 +61,12 @@ int main()
             gameRecordList.push_back(gameRecord);
 
             // insert record to database
-            Address tempAddress = disk.saveToDisk(&gameRecord, sizeof(GameRecord));
-
+            Address* tempAddress = new Address;
+            *tempAddress = disk.saveToDisk(&gameRecord, sizeof(GameRecord));
+            
             // build b+ tree as we insert records
-            // ...
+            std::cout << "Key number = " << recordNum+1 << ": ";
+            tree.insert(tempAddress, gameRecord.PTS_home);
 
             recordNum++;
         }

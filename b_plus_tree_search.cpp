@@ -7,13 +7,17 @@
 #include <vector>
 #include <cstring>
 #include <iostream>
+#include <numeric>
+
 
 using namespace std;
 
-void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
+std::vector<float> BPlusTree::search(float lowerBoundKey, float upperBoundKey)
 {
     
     bool found = false;
+    // An Array that stores the FG3_PCT_home values returned from the addresses, so that we can calculate based on the values.
+    std::vector<float> values;
     
     // Tree is empty.
     if (rootOfTree == nullptr)
@@ -35,7 +39,7 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
         while (current_node->isLeaf == false)
         {
             // Iterate through each key in the current node and check which is the key of the lowest value that is bigger than the lower bound.
-            for (int i = 0; i < current_node -> numOfKeys; i++)
+            for (int i = 0; i < current_node -> numKeys; i++)
             {
                 if (lowerBoundKey < current_node -> keys[i])
                 {
@@ -48,7 +52,7 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                     break;
                 }
 
-                if (i == current_node -> numOfKeys - 1)
+                if (i == current_node -> numKeys - 1)
                 {
                     // go to the node that the right pointer is pointing at to continue searching
                     current_node = (BPlusTreeNode *) current_node -> pointers[i + 1];
@@ -63,9 +67,6 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
 
             // Here, the current node is a leaf node
 
-            // An Array that stores the FG3_PCT_home values returned from the addresses, so that we can calculate based on the values.
-            std::vector<float> values;
-
             // We should keep searching until we reach a key that is more than the upperBoundKey.
             bool exploredRange = false;
 
@@ -75,7 +76,7 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
             while (exploredRange == false)
             {
                 // iterate through all the keys in the current node
-                for (int i = 0; i < current_node -> numOfKeys; i++)
+                for (int i = 0; i < current_node -> numKeys; i++)
                 {
                     // If the key is within the lowerBoundKey and upperBoundKey
                     if (current_node -> keys[i] >= lowerBoundKey && current_node -> keys[i] <= upperBoundKey)
@@ -84,10 +85,10 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                         LL* addressOfLLwithinBound = (LL*)current_node -> pointers[i];
 
                         // Get all the values in the linked list.
-                        for (int i = 0; i < addressOfLLwithinBound -> numRecords; i++)
+                        for (int i = 0; i < addressOfLLwithinBound -> getNumRecords(); i++)
                         {
                             // Enter the key into the values array for the number of records with the key.
-                            values.push_back(addressOfLLwithinBound -> key);
+                            values.push_back(addressOfLLwithinBound -> getKey());
                         }
                         
                         // ONLY CONSIDER THIS IF WE ARE NOT STORING IT IN A LINKED LIST.
@@ -109,7 +110,7 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                     }
 
                     // if the last key in the current node is still lower than the upperBoundKey, we have to explore the next leaf node too.
-                    if (i == current_node -> numOfKeys && current_node -> keys[i] < upperBoundKey)
+                    if (i == current_node -> numKeys && current_node -> keys[i] < upperBoundKey)
                     {
                         // If there are no other leaf nodes left to explore
                         if (current_node->pointers[maxKeys] == nullptr)
@@ -129,6 +130,23 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                     }
                 }
             }
+
+            if (values.empty())
+            {
+                std::cout << "No keys in this range" << std::endl;
+                return values;
+            }
+
+            else
+            {
+                
+                int sum = std::accumulate(values.begin(), values.end(), 0);
+                float average = static_cast<float>(sum) / values.size();
+                std::cout << "Average of keys is" << average << std::endl;
+                return values;
+            }
         }
     }
+
+    return values;
 }
