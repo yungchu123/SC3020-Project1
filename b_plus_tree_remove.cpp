@@ -315,7 +315,7 @@ void BPlusTree::removeInternal(float key, Node *cursorDiskAddress, Node *childDi
 
   // If not, we need to find the parent of this parent to get our siblings.
   // Pass in lower bound key of our child to search for it.
-  Node *parentDiskAddress = findParent((Node *)addressOfRootNode, cursorDiskAddress, cursor->keys[0]);
+  //Node *parentDiskAddress = findParent((Node *)addressOfRootNode, cursorDiskAddress, cursor->keys[0]);
   int leftSibling, rightSibling;
 
   // Load parent into main memory.

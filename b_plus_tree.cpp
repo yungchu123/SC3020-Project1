@@ -11,9 +11,9 @@ using namespace std;
 BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
 {
     // Initialise root node of the Tree
-    addressOfRootNode = new Address;
-    addressOfRootNode->blockAddress = nullptr;
-    addressOfRootNode->offset = blockSize;
+    // addressOfRootNode = new Address;
+    // addressOfRootNode->blockAddress = nullptr;
+    // addressOfRootNode->offset = blockSize;
 
     // Initialise root, root leads to the address of the root node of the B+ Tree.
     rootOfTree = nullptr;
@@ -43,7 +43,6 @@ BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
     {
         throw std::overflow_error("Error: Keys and Pointers cannot fit into the Node.");
     }
-
 }
 
 

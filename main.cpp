@@ -1,5 +1,6 @@
 #include "memory_pool.h"
 #include "types.h"
+#include "b_plus_tree.h"
 
 #include <iostream>
 #include <fstream>
@@ -30,6 +31,10 @@ int main()
     // Create memory pool for the disk
     std::cout << "Creating the disk on the stack for records, index" << std::endl;
     MemoryPool disk(MEMORYPOOLSIZE, BLOCKSIZE);
+
+    // Create the tree 
+    std::cout << "Creating the tree" << std::endl;
+    BPlusTree tree = BPlusTree(BLOCKSIZE, &disk);
 
     // Open test data
     std::cout <<"Reading in data ... "<< std::endl;
@@ -76,6 +81,7 @@ int main()
     std::cout << "Size of a Record: " << sizeof(GameRecord) << std::endl;
     std::cout << "Number of Records in a Block: " << BLOCKSIZE / sizeof(GameRecord) << std::endl;
     std::cout << "Number of Blocks for storing data: " << disk.getAllocated() << std::endl;
+    std::cout << std::endl;
     
     // OTHER LOGGING INFO --------------------------
     // std::cout << "Number of keys per index block --- " << tree.getMaxKeys() << endl;
@@ -88,6 +94,14 @@ int main()
     // std::cout <<"Actual size of database : "<< disk.getActualSizeUsed() + index.getActualSizeUsed()<<endl;
     //std::cout <<"Size of database (size of all blocks): "<<disk.getSizeUsed()<< std::endl;
 
+
+    std::cout <<"=====================================Experiment 2=========================================="<< std::endl;
+    std::cout << "Parameter n of the B+ tree     : "<<tree.getMaxKeys()<< std::endl;
+    std::cout << "Number of nodes of the B+ tree : "<<tree.getNumNodes()<< std::endl;
+    std::cout << "Height of the B+ tree          : "<<tree.getLevels()<< std::endl;
+    std::cout << "Root nodes and child nodes :"<< std::endl;
+    // tree.display(tree.getRoot(),1);
+    std::cout << std::endl;
 
     return 0;
 }

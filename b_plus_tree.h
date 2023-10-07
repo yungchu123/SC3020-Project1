@@ -42,7 +42,7 @@ class BPlusTree
     private:
         MemoryPool *disk; 
         MemoryPool *index; 
-        Address* addressOfRootNode; // Address of the root node
+        void* addressOfRootNode; // Address of the root node
         Node *rootOfTree; // Pointer to root's address in the Main Memory
         int levels; // The number of levels in the B Plus Tree
         int numNodes; // The number of nodes in the B Plus Tree
@@ -60,6 +60,21 @@ class BPlusTree
         void removeInternal(float key, Node *cursorDiskAddress, Node *childDiskAddress);
         void removeLL(Address LLHeadAddress);
         void borrowOrMerge(Node *cursor, Node *parent, int leftSibling, int rightSibling);
+        
+        // Return height of tree
+        int getLevels() {
+            return levels;
+        }
+
+        // Return number of nodes
+        int getNumNodes() {
+            return numNodes;
+        }
+
+        // Return maximum number of keys in a node
+        int getMaxKeys() {
+            return maxKeys;
+        }
 };
 
 #endif
