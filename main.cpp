@@ -76,7 +76,7 @@ int main()
     std::cout << gameRecordList[1].FG_PCT_home << std::endl;
     std::cout << recordAddressList[1].blockAddress << std::endl;
     std::cout <<"=====================================Experiment 1=========================================="<< std::endl;
-    std::cout << "Number of Records: " << disk.getActualSizeUsed() / sizeof(GameRecord) << std::endl;
+    std::cout << "Number of Records: " << recordNum << std::endl;
     std::cout << "Size of a Record: " << sizeof(GameRecord) << std::endl;
     std::cout << "Number of Records in a Block: " << BLOCKSIZE / sizeof(GameRecord) << std::endl;
     std::cout << "Number of Blocks for storing data: " << disk.getAllocated() << std::endl;
@@ -96,22 +96,71 @@ int main()
             /*
     =============================================================
     Experiment 2:
-
+    Build a B+ tree on the attribute "FG_PCT_home" by inserting the records sequentially and report the following statistics:
+    - the parameter n of the B+ tree
+    - the number of nodes of the B+ tree
+    - the number of levels of the B+ tree
+    - the content of the root node (only the keys)
     =============================================================
     */
 
     // Build the B+ tree from the records
-    for (int i = 0 ; i < 35 ; i++) {
-        tree.insert(recordAddressList[i], gameRecordList[i].FG_PCT_home); // FG_PCT_home is used as our primary key
+    for (int i = 0 ; i < 70 ; i++) {
+        std::cout << i ;
+        tree.insert(recordAddressList[i], gameRecordList[i].FG3_PCT_home); // FG3_PCT_home is used as our primary key
     }
 
     std::cout <<"=====================================Experiment 2=========================================="<< std::endl;
     std::cout << "Parameter n of the B+ tree     : "<<tree.getMaxKeys()<< std::endl;
     std::cout << "Number of nodes of the B+ tree : "<<tree.getNumNodes()<< std::endl;
     std::cout << "Height of the B+ tree          : "<<tree.getLevels()<< std::endl;
-    std::cout << "Root nodes and child nodes :"<< std::endl;
-    // tree.display(tree.getRoot(),1);
+    std::cout << "Root node :"<< std::endl;
+    tree.displayNode(tree.getRootOfTree());
     std::cout << std::endl;
+ 
+                /*
+    =============================================================
+    Experiment 3:
+    Retrieve those movies with the "FG_PCT_home" equal to 0.5 and report the following statistics:
+    - the number of index nodes the process accesses
+    - the number of data blocks the process accesses
+    - the average of “FG3_PCT_home” of the records that are returned
+    - the running time of the retrieval process (please specify the method you use for measuring the running time of a piece of code)
+    - the number of data blocks that would be accessed by a brute-force linear scan method (i.e., it scans the data blocks one by one) and its running time (for comparison)
+    =============================================================
+    */
+
+    std::cout <<"=====================================Experiment 3=========================================="<<endl;
+    tree.search(0.5, 0.5);
+    std::cout << std::endl;
+
+               /*
+    =============================================================
+    Experiment 4:
+    Retrieve those movies with the attribute "FG_PCT_home" from 0.6 to 1, both inclusively and report the following statistics:
+    - the number of index nodes the process accesses
+    - the number of data blocks the process accesses
+    - the average of “FG3_PCT_home” of the records that are returned
+    - the running time of the retrieval process
+    - the number of data blocks that would be accessed by a brute-force linear scan method (i.e., it scans the data blocks one by one) and its running time (for comparison)
+    =============================================================
+    */
+
+    std::cout <<"=====================================Experiment 4=========================================="<<endl;
+    tree.search(0.6, 1);
+    std::cout << std::endl;
+
+               /*
+    =============================================================
+    Experiment 5:
+    Delete those movies with the attribute “FG_PCT_home” below 0.35 inclusively, update the B+ tree accordingly, and report the following statistics:
+    - the number nodes of the updated B+ tree
+    - the number of levels of the updated B+ tree
+    - the content of the root node of the updated B+ tree(only the keys)
+    - the running time of the process;
+    - the number of data blocks that would be accessed by a brute-force linear scan method (i.e., it scans the data blocks one by one) and its running time (for comparison)
+    =============================================================
+    */
 
     return 0;
 }

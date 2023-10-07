@@ -64,6 +64,11 @@ class BPlusTree
         int getMaxKeys() {
             return maxKeys;
         }
+
+        // Return the root of tree
+        BPlusTreeNode* getRootOfTree() {
+            return rootOfTree;
+        }
     
 };
 
