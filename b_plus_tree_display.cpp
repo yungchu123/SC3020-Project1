@@ -1,5 +1,6 @@
 #include "b_plus_tree.h"
 #include "b_plus_tree_node.h"
+#include "linked_list_node.h"
 #include "types.h"
 
 #include <vector>
@@ -17,7 +18,7 @@ void BPlusTree::displayNode(BPlusTreeNode* node)
     // Print out all contents in the Node as as |Pointer|Key|Pointer
     std::cout << "|";
 
-    for (int i = 0; i < node->numOfKeys; i++)
+    for (int i = 0; i < node->numKeys; i++)
     {
         address = node->pointers[i];
         std::cout << address << "|";
@@ -25,9 +26,9 @@ void BPlusTree::displayNode(BPlusTreeNode* node)
     }
 
     // Print pointer after the last key (if it is an internal node)
-    if (node->pointers[node->numOfKeys] != nullptr) 
+    if (node->pointers[node->numKeys] != nullptr) 
     {
-        std::cout << node->pointers[node->numOfKeys]<< "|";
+        std::cout << node->pointers[node->numKeys]<< "|";
     }
 
     // else if it is a leaf node, it won't have a pointer after the last key.
@@ -40,7 +41,7 @@ void BPlusTree::displayNode(BPlusTreeNode* node)
 
 
     // if the numOfKeys is lesser than maxKeys, it will have empty keys and pointers
-    for (int i = (node -> numOfKeys)+1; i < maxKeys; i++)
+    for (int i = (node -> numKeys)+1; i < maxKeys; i++)
     {
         std::cout << " x |";      // Remaining empty keys
         
@@ -80,7 +81,7 @@ void BPlusTree::displayTree(BPlusTreeNode* node, int level)
 
         if (node -> isLeaf != true)
         {
-            for (int i = 0; i < (node->numOfKeys) + 1; i++)
+            for (int i = 0; i < (node->numKeys) + 1; i++)
             {
                 node = (BPlusTreeNode* )node->pointers[i];
                 displayTree(node, level + 1);
@@ -96,7 +97,7 @@ void BPlusTree::displayTree(BPlusTreeNode* node, int level)
 
 void BPlusTree::displayBlock(Address *address)
 {
-    void *block = operator new(nodeSize);
+    void *block = operator new(sizeOfNode);
     std::memcpy(block, address, sizeOfNode);
 
     unsigned char *blockChar = (unsigned char*)address;
@@ -105,7 +106,14 @@ void BPlusTree::displayBlock(Address *address)
 
     while (i < sizeOfNode)
     {
-        void *
+        void *recordAddress = operator new((sizeof(GameRecord)));
+        std::memcpy(recordAddress, blockChar, sizeof(GameRecord));
+
+        GameRecord * gameRecord = (GameRecord *) recordAddress;
+
+        std::cout << "[" << gameRecord->GAME_DATE_EST << gameRecord->TEAM_ID_home << gameRecord->PTS_home << gameRecord->FG_PCT_home << gameRecord->FT_PCT_home << gameRecord->FG3_PCT_home << gameRecord->AST_home << gameRecord->REB_home << gameRecord->HOME_TEAM_WINS;
+        blockChar += sizeof(GameRecord);
+        i += sizeof(GameRecord);
     }
 }
 
@@ -114,15 +122,15 @@ void BPlusTree::displayBlock(Address *address)
 // Displays the LinkedList that stores the records.
 void BPlusTree::displayLL(LL* LinkedList)
 {
-    LLNode llnode = (LinkedList -> head);
+    LLNode* llnode = LinkedList -> getHead();
     
-    for (int i = 0; i < LinkedList->numRecords; i++)
+    for (int i = 0; i < LinkedList->getNumRecords(); i++)
     {
-        Address address = llnode->recordAddress ;
+        Address address = llnode->getRecordAddress() ;
         std::cout << "\nData block accessed. Content is -----";
         displayBlock(&address);
         std::cout << endl;
-        llnode = llnode -> next;
+        llnode = llnode -> getNext();
     }
 }
 
