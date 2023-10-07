@@ -61,11 +61,11 @@ Node::Node(int maxKeys, std::size_t blockSize)
     // Initialise isleaf as true at first.
     isLeaf = true;
 
-    // Initialise the keys in the array.
+    // Array for keys
     keys = new float[maxKeys];
 
     // Initialise the pointers to an Address
-    pointers = new Address[maxKeys + 1];
+    pointers = new void* [maxKeys + 1];
 
     for (int i = 0; i < maxKeys + 1; i++)
     {
