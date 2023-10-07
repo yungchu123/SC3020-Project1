@@ -26,6 +26,14 @@ public:
     LL(LLNode *head, float key);
 
     void insert(Address recordAddress);
+    
+    //changed delete to LLdelete
+    void LLdelete();
+    
+    //changed delete to LLdelete
+    ~LL(){
+        LLdelete();
+    }
 };
 
 #endif

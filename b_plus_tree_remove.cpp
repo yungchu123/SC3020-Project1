@@ -72,6 +72,7 @@ void BPlusTree::remove(double minValue, double maxValue) // 0 and 0.35 threshold
                 }
             }
         }
+        // at leaf node now based on minValue 
         // ----------new implementation of calling delete once rebuild then call remove again---
         int pos; // position where we find the key we want to delete
         bool found = false; // stop finding once we find one of the key that fits range
@@ -94,6 +95,13 @@ void BPlusTree::remove(double minValue, double maxValue) // 0 and 0.35 threshold
         // delete linked list 
         // delete linked list code 
 
+        //delete duplicates within the key first
+        Address *LLAddress = (Address *)current_node->pointers[pos];
+          // works for duplicates to delete too 
+          LL linkedlist = *(LL *)disk->loadFromDisk(*LLAddress, sizeof(LL));
+          // delete linked list
+          linkedlist.LLdelete(); 
+        
         //delete key
         for (int i = pos; i < current_node->numKeys; i++)
         {
@@ -114,7 +122,7 @@ void BPlusTree::remove(double minValue, double maxValue) // 0 and 0.35 threshold
           {
             // deallocate block used to store root node?
 
-            rootOfTree == nullptr; 
+            rootOfTree = nullptr; 
           }
           
           std::cout << "Root node has been deleted" << endl;
@@ -364,7 +372,7 @@ void BPlusTree::removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNo
   BPlusTreeNode *newParent = findParent(parentNode, childNode);
 
   // find left and right sibling of old parent
-  for (pos = 0; pos < newParent->numKeys + 1; pos++) // not too sure about this part
+  for (int pos = 0; pos < newParent->numKeys + 1; pos++) // not too sure about this part
   {
     if (newParent->pointers[pos] == parentNode)
     {
