@@ -32,12 +32,12 @@ BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
     // Size that is used to store the keys and pointers, after storing the bool isLeaf and int numOfKeys.
     nodeBufferSize = blockSize - sizeof(bool) - sizeof(int);
 
-    size_t sizeExludingLastKeyPointer = sizeof(void**);
+    size_t sizeExludingLastKeyPointer = sizeof(void*);
     maxKeys = 0;
 
-    while(sizeExludingLastKeyPointer + sizeof(void**) + sizeof(float) <= nodeBufferSize)
+    while(sizeExludingLastKeyPointer + sizeof(void*) + sizeof(float) <= nodeBufferSize)
     {
-        sizeExludingLastKeyPointer += (sizeof(void**) + sizeof(float));
+        sizeExludingLastKeyPointer += (sizeof(void*) + sizeof(float));
         maxKeys += 1;
     }
 
