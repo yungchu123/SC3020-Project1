@@ -46,8 +46,10 @@ BPlusTree::BPlusTree(std::size_t blockSize, MemoryPool *disk)
         throw std::overflow_error("Error: Keys and Pointers cannot fit into the Node.");
     }
 
+
     this -> disk = disk;
 
 }
+
 
 

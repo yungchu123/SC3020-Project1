@@ -1,5 +1,5 @@
-#ifndef B_PLUS_TREE_H;
-#define B_PLUS_TREE_H;
+#ifndef B_PLUS_TREE_H
+#define B_PLUS_TREE_H
 
 #include "types.h"
 #include "memory_pool.h"
@@ -9,7 +9,9 @@
 #include <cstddef>
 #include <array>
 
+
 using namespace std;
+
 
 class BPlusTree
 {
@@ -31,11 +33,27 @@ class BPlusTree
         void search(float lowerBoundKey, float upperBoundKey); // search function, taking in lowerBoundKey and upperBoundKey
         void displayNode(BPlusTreeNode *Node);
         void displayTree(BPlusTreeNode *node, int level);
+
         int remove(double minValue, double maxValue);
         void removeInternal(float key, Node *cursorDiskAddress, Node *childDiskAddress);
         void removeLL(Address LLHeadAddress);
         void borrowOrMerge(Node *cursor, Node *parent, int leftSibling, int rightSibling);
+
         void displayLL(LL *LinkedList);
+          // Return height of tree
+        int getLevels() {
+            return levels;
+        }
+
+        // Return number of nodes
+        int getNumNodes() {
+            return numNodes;
+        }
+
+        // Return maximum number of keys in a node
+        int getMaxKeys() {
+            return maxKeys;
+        }
     
 };
 
