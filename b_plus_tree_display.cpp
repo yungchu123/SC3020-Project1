@@ -37,7 +37,7 @@ void BPlusTree::displayNode(BPlusTreeNode* node)
         std::cout << " Null |";
     }
 
-    std::cout << " x |"; // Print out the node -> keys[node->numOfKeys]
+
 
 
     // if the numOfKeys is lesser than maxKeys, it will have empty keys and pointers
