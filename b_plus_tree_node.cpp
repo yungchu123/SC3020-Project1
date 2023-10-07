@@ -1,5 +1,3 @@
-
-
 #include "b_plus_tree.h"
 #include "b_plus_tree_node.h"
 #include "types.h"
@@ -10,13 +8,11 @@
 #include <cstddef>
 
 
-
-
 BPlusTreeNode::BPlusTreeNode(int maxKeys)
 {
     
     // Initialise the number of keys
-    //numOfKeys = 0;
+    numKeys = 0;
 
     // Initialise isleaf as true at first.
     isLeaf = true;
@@ -35,4 +31,7 @@ BPlusTreeNode::BPlusTreeNode(int maxKeys)
             keys[i] = '\0';
         }
     }
+
+
+
 }
