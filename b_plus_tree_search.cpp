@@ -86,17 +86,8 @@ void BPlusTree::search(float lowerBoundKey, float upperBoundKey)
                         // Get all the values in the linked list.
                         for (int i = 0; i < addressOfLLwithinBound -> numRecords; i++)
                         {
-                            // get the address of the node that the pointer is pointing to.
-                            addressOfwithinBound = (addressOfLLwithinBound->head)->recordAddress;
-
-                             // Load the data from the memory address that contains the lower bound key
-                            void* dataInAddress = disk->loadFromDisk(*addressOfwithinBound, sizeof(GameRecord));
-
-                            // Go to the address that the address is pointing towards and get the value of FG3_PCT_home
-                            values.push_back(((GameRecord* )dataInAddress) ->FG3_PCT_home);
-
-                            //get the next LLNode in the linked list.
-                            addressOfLLwithinBound = (addressOfLLwithinBound->head)->next;
+                            // Enter the key into the values array for the number of records with the key.
+                            values.push_back(addressOfLLwithinBound -> key);
                         }
                         
                         // ONLY CONSIDER THIS IF WE ARE NOT STORING IT IN A LINKED LIST.

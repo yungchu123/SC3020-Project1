@@ -94,5 +94,37 @@ void BPlusTree::displayTree(BPlusTreeNode* node, int level)
     }
 }
 
+void BPlusTree::displayBlock(Address *address)
+{
+    void *block = operator new(nodeSize);
+    std::memcpy(block, address, sizeOfNode);
+
+    unsigned char *blockChar = (unsigned char*)address;
+
+    int i = 0;
+
+    while (i < sizeOfNode)
+    {
+        void *
+    }
+}
+
+
+
+// Displays the LinkedList that stores the records.
+void BPlusTree::displayLL(LL* LinkedList)
+{
+    LLNode llnode = (LinkedList -> head);
+    
+    for (int i = 0; i < LinkedList->numRecords; i++)
+    {
+        Address address = llnode->recordAddress ;
+        std::cout << "\nData block accessed. Content is -----";
+        displayBlock(&address);
+        std::cout << endl;
+        llnode = llnode -> next;
+    }
+}
+
 
 
