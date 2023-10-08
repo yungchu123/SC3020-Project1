@@ -7,7 +7,7 @@
 
 void BPlusTree::insert(Address address, float key)
 {
-    std::cout << "Inserting Key = " << key << std::endl;
+    // std::cout << "Inserting Key = " << key << std::endl;
     // B+ Tree is currently empty
 
     if (this->rootOfTree == nullptr)

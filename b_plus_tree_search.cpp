@@ -35,9 +35,9 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
         BPlusTreeNode *current_node = rootOfTree;
 
        // Display the content of the node.
-       std::cout << "Index Node accessed, Content is ----" << endl;
+    //    std::cout << "Index Node accessed, Content is ----" << endl;
+    //    displayNode(current_node);
 
-       displayNode(current_node);
        counterOfIndexNodeAccess++;
        counterOfInternalNodeAccess++;
 
@@ -53,8 +53,9 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
                     current_node = (BPlusTreeNode *) current_node -> pointers[i];
                     
                     // Display the content of the node.
-                    std::cout << "Index Node accessed, Content is ----" << endl;;
-                    displayNode(current_node);
+                    // std::cout << "Index Node accessed, Content is ----" << endl;;
+                    // displayNode(current_node);
+
                     counterOfIndexNodeAccess++;
                     counterOfInternalNodeAccess++;
                     
@@ -67,8 +68,9 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
                     current_node = (BPlusTreeNode *) current_node -> pointers[i + 1];
             
                     // Display the content of the node.
-                    std::cout << "Index Node accessed, Content is ----" << endl;;
-                    displayNode(current_node);
+                    // std::cout << "Index Node accessed, Content is ----" << endl;;
+                    // displayNode(current_node);
+
                     counterOfIndexNodeAccess++;
                     counterOfInternalNodeAccess++;
                     
@@ -151,8 +153,9 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
 
                     
                     // Display the content of the node.
-                    std::cout << "Index Node accessed, Content is ----"<< endl;;
-                    displayNode(current_node);
+                    // std::cout << "Index Node accessed, Content is ----"<< endl;;
+                    // displayNode(current_node);
+
                     counterOfIndexNodeAccess++;
                     counterOfLeafNodeAccess++;
                 }
@@ -170,9 +173,10 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
             std::cout << "Total Number of Leaf nodes the process accesses is " << counterOfLeafNodeAccess <<std::endl;
 
             // std::cout<< "the number of addresses is " << listOfAddresses.size() << endl;
-            return listOfAddresses;
+            
         }
     }
+    return listOfAddresses;
 }
 
 float BPlusTree::AverageFG3_PCT_home(std::vector<Address> vectorOfAddress, MemoryPool* disk)
