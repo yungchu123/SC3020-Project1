@@ -14,7 +14,7 @@ void BPlusTree::removeRange(float minValue, float maxValue)
     numNodes = getNumNodes(); 
     if (rootOfTree == nullptr)
     {
-        //throw std::logic_error('Tree is empty');
+        throw std::logic_error('Tree is empty');
     }
     else
     {
