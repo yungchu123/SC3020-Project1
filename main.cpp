@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <chrono>
 
 
 int main()
@@ -16,6 +17,7 @@ int main()
     // Initialise
     int BLOCKSIZE = 400;             // 400B
     int MEMORYPOOLSIZE = 500000000;  // 500MB
+    int BLOCKDELAY = 5; // Time for accessing blocks assumed to be 5ms
 
         /*
     =============================================================
@@ -69,17 +71,15 @@ int main()
         datafile.close();
     }
 
-    // for (const GameRecord &game : gameRecordList)
-    // {
-    //     std::cout << "ID: " << game.TEAM_ID_home << ", Points: " << game.PTS_home << ", Size: " << sizeof(game) << std::endl;
-    // }
-    std::cout << gameRecordList[1].FG_PCT_home << std::endl;
-    std::cout << recordAddressList[1].blockAddress << std::endl;
+    int blockNum = disk.getAllocated(); // Number of blocks in disk for records
+    int recordsInBlock = BLOCKSIZE / sizeof(GameRecord); // Number of Records in a Block
+
+    std::cout << std::endl;
     std::cout <<"=====================================Experiment 1=========================================="<< std::endl;
     std::cout << "Number of Records: " << recordNum << std::endl;
     std::cout << "Size of a Record: " << sizeof(GameRecord) << std::endl;
-    std::cout << "Number of Records in a Block: " << BLOCKSIZE / sizeof(GameRecord) << std::endl;
-    std::cout << "Number of Blocks for storing data: " << disk.getAllocated() << std::endl;
+    std::cout << "Number of Records in a Block: " << recordsInBlock << std::endl;
+    std::cout << "Number of Blocks for storing data: " << blockNum << std::endl;
     std::cout << std::endl;
     
     // OTHER LOGGING INFO --------------------------
@@ -105,8 +105,7 @@ int main()
     */
 
     // Build the B+ tree from the records
-    for (int i = 0 ; i < 70 ; i++) {
-        std::cout << i ;
+    for (int i = 0 ; i < recordNum ; i++) {
         tree.insert(recordAddressList[i], gameRecordList[i].FG_PCT_home); // FG_PCT_home is used as our primary key
     }
 
@@ -115,7 +114,7 @@ int main()
     std::cout << "Number of nodes of the B+ tree : "<<tree.getNumNodes()<< std::endl;
     std::cout << "Height of the B+ tree          : "<<tree.getLevels()<< std::endl;
     std::cout << "Root node :"<< std::endl;
-    tree.displayNode(tree.getRootOfTree());
+    tree.displayNodeKeys(tree.getRootOfTree());
     std::cout << std::endl;
  
                 /*
@@ -131,7 +130,35 @@ int main()
     */
 
     std::cout <<"=====================================Experiment 3=========================================="<<endl;
+    disk.resetBlocksAccessed();
+    
+    // B+ Tree Method
+    auto start_time = std::chrono::high_resolution_clock::now();
     tree.AverageFG3_PCT_home(tree.search(0.5, 0.5), &disk);
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time); 
+    int blockAccessed = disk.resetBlocksAccessed();
+
+    std::cout << "---------- B+ Tree ----------" << std::endl; 
+    std::cout << "Runtime                        : " << duration.count() + blockAccessed*BLOCKDELAY << " milliseconds" << std::endl;
+    std::cout << "Number of data blocks accessed : "<< blockAccessed << std::endl;
+    std::cout << std::endl;
+
+    // Brute Force Method
+    auto start_time2 = std::chrono::high_resolution_clock::now();
+    for (int i = 0 ; i < blockNum ; i++) {
+        for (int j = 0 ; j < recordsInBlock ; j++) {
+            disk.loadFromDisk(recordAddressList[i+j], sizeof(GameRecord));
+        }
+    }
+    auto end_time2 = std::chrono::high_resolution_clock::now();
+    auto duration2 = std::chrono::duration_cast<std::chrono::milliseconds>(end_time2 - start_time2); 
+    int blockAccessed2 = blockNum;
+
+    std::cout << "---------- Brute Force ----------" << std::endl; 
+    std::cout << "Runtime                        : " << duration2.count() + blockAccessed2*BLOCKDELAY << " milliseconds" << std::endl;
+    std::cout << "Number of data blocks accessed : "<< blockAccessed2 << std::endl;
+
     std::cout << std::endl;
 
                /*
@@ -147,9 +174,36 @@ int main()
     */
 
     std::cout <<"=====================================Experiment 4=========================================="<<endl;
-    tree.AverageFG3_PCT_home(tree.search(0.6, 1), &disk); 
+    disk.resetBlocksAccessed();
+    
+    // B+ Tree Method
+    start_time = std::chrono::high_resolution_clock::now();
+    tree.AverageFG3_PCT_home(tree.search(0.6, 1.0), &disk); 
+    end_time = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time); 
+    blockAccessed = disk.resetBlocksAccessed();
+
+    std::cout << "---------- B+ Tree ----------" << std::endl; 
+    std::cout << "Runtime                        : " << duration.count() + blockAccessed*BLOCKDELAY << " milliseconds" << std::endl;
+    std::cout << "Number of data blocks accessed : "<< blockAccessed << std::endl;
     std::cout << std::endl;
 
+    // Brute Force Method
+    start_time2 = std::chrono::high_resolution_clock::now();
+    for (int i = 0 ; i < blockNum ; i++) {
+        for (int j = 0 ; j < recordsInBlock ; j++) {
+            disk.loadFromDisk(recordAddressList[i+j], sizeof(GameRecord));
+        }
+    }
+    end_time2 = std::chrono::high_resolution_clock::now();
+    duration2 = std::chrono::duration_cast<std::chrono::milliseconds>(end_time2 - start_time2); 
+    blockAccessed2 = blockNum;
+
+    std::cout << "---------- Brute Force ----------" << std::endl; 
+    std::cout << "Runtime                        : " << duration2.count() + blockAccessed2*BLOCKDELAY << " milliseconds" << std::endl;
+    std::cout << "Number of data blocks accessed : "<< blockAccessed2 << std::endl;
+
+    std::cout << std::endl;
                /*
     =============================================================
     Experiment 5:
