@@ -32,8 +32,9 @@ class BPlusTree
         BPlusTree(std::size_t blockSize, MemoryPool *disk); // Constructor class for BPlusTree
         void displayNode(BPlusTreeNode *Node);
         void displayTree(BPlusTreeNode *node, int level);
-        void remove(double minValue, double maxValue);
         void removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);
+        void removeRange(float minValue, float maxValue);
+        void remove(float key);
         std::vector<Address> search(float lowerBoundKey, float upperBoundKey);
         float AverageFG3_PCT_home(std::vector<Address> vectorOfAddress, MemoryPool* disk);
         void displayNodeKeys(BPlusTreeNode* node);

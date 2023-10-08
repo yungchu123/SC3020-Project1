@@ -215,6 +215,44 @@ int main()
     - the number of data blocks that would be accessed by a brute-force linear scan method (i.e., it scans the data blocks one by one) and its running time (for comparison)
     =============================================================
     */
+    std:: cout << "removing nodes" << endl;
+    tree.removeRange(0,0.35); 
+    std:: cout << "removed nodes successful" << endl;
+    std::cout << "Number of nodes of the B+ tree : "<<tree.getNumNodes()<< std::endl;
+    std::cout << "Height of the B+ tree          : "<<tree.getLevels()<< std::endl;
+    std::cout << "Root node :"<< std::endl;
+    tree.displayNode(tree.getRootOfTree());
+    std::cout << std::endl;
+    
+    disk.resetBlocksAccessed();
+    
+    // B+ Tree Method
+    start_time = std::chrono::high_resolution_clock::now();
+    tree.AverageFG3_PCT_home(tree.search(0.6, 1.0), &disk); 
+    end_time = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time); 
+    blockAccessed = disk.resetBlocksAccessed();
 
+    std::cout << "---------- B+ Tree ----------" << std::endl; 
+    std::cout << "Runtime                        : " << duration.count() + blockAccessed*BLOCKDELAY << " milliseconds" << std::endl;
+    std::cout << "Number of data blocks accessed : "<< blockAccessed << std::endl;
+    std::cout << std::endl;
+
+    // Brute Force Method
+    start_time2 = std::chrono::high_resolution_clock::now();
+    for (int i = 0 ; i < blockNum ; i++) {
+        for (int j = 0 ; j < recordsInBlock ; j++) {
+            disk.loadFromDisk(recordAddressList[i+j], sizeof(GameRecord));
+        }
+    }
+    end_time2 = std::chrono::high_resolution_clock::now();
+    duration2 = std::chrono::duration_cast<std::chrono::milliseconds>(end_time2 - start_time2); 
+    blockAccessed2 = blockNum;
+
+    std::cout << "---------- Brute Force ----------" << std::endl; 
+    std::cout << "Runtime                        : " << duration2.count() + blockAccessed2*BLOCKDELAY << " milliseconds" << std::endl;
+    std::cout << "Number of data blocks accessed : "<< blockAccessed2 << std::endl;
+
+    std::cout << std::endl;
     return 0;
 }
