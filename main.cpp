@@ -107,7 +107,7 @@ int main()
     // Build the B+ tree from the records
     for (int i = 0 ; i < 70 ; i++) {
         std::cout << i ;
-        tree.insert(recordAddressList[i], gameRecordList[i].FG3_PCT_home); // FG3_PCT_home is used as our primary key
+        tree.insert(recordAddressList[i], gameRecordList[i].FG_PCT_home); // FG_PCT_home is used as our primary key
     }
 
     std::cout <<"=====================================Experiment 2=========================================="<< std::endl;

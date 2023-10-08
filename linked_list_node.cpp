@@ -9,7 +9,7 @@ LLNode::LLNode(Address recordAddress)
 
 LL::LL(LLNode *head, float key)
 {
-    this->numRecords = 0;
+    this->numRecords = 1;
     this->head = head;
     this->key = key;
 }

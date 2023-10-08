@@ -73,6 +73,9 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
             bool exploredRange = false;
 
             Address* addressOfLLwithinBound;
+            LLNode* traversalNode;
+            int j;
+            
 
             // while we have not found the key that is higher than the upperBoundKey
             while (exploredRange == false)
@@ -87,19 +90,25 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
                         addressOfLLwithinBound = (Address*)current_node -> pointers[i];
                         LL linkedList = *(LL *)disk->loadFromDisk(*addressOfLLwithinBound, sizeof(LL));
 
-                        std::cout<< "hi" << endl;
+                        std::cout<< "Entered if statement for the key within range" << endl;
 
                         // Get all the values in the linked list.
-                        LLNode* traversalNode = linkedList.getHead();
+                        traversalNode = linkedList.getHead();
                        
-                        int j = 0;
-                        //for (int i = 0; i < linkedList.getNumRecords(); i++)
-                        while (traversalNode != nullptr)
+                        j = 0;
+
+                        // while (traversalNode != nullptr)
+                        for (int i = 0; i < linkedList.getNumRecords(); i++)
                         {
                             // Enter the key into the listOfAddresses array for the number of records with the key.
                             listOfAddresses.push_back(traversalNode->getRecordAddress());
                             traversalNode = traversalNode -> getNext();
                             std::cout<< "this is " << j << " iteration" << endl;
+                            // GameRecord* returnedData = (GameRecord*)disk->loadFromDisk(traversalNode -> getRecordAddress(), sizeof(GameRecord));
+                            // returnedData->FG3_PCT_home;
+                            // std::cout<< "the key was " << returnedData->FG_PCT_home << endl;
+                            // std::cout<< "the value was " << returnedData->FG3_PCT_home << endl;
+                            j++;
 
                         }
                         
@@ -132,8 +141,6 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
                     displayNode(current_node);
                 }
                 
-                
-
 
             }
 
@@ -142,7 +149,7 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
                 std::cout << "No records in this range" << std::endl;
             }
 
-
+            std::cout<< "the number of addresses is " << listOfAddresses.size() << endl;
             return listOfAddresses;
         }
     }
@@ -155,16 +162,28 @@ float BPlusTree::AverageFG3_PCT_home(std::vector<Address> vectorOfAddress, Memor
 
     std::vector<double> listOfFG3_PCT_home;
     int length = vectorOfAddress.size();
+    int k = 0;
 
     for (int i = 0; i < length; i++)
     {
         Address address = vectorOfAddress[i];
         GameRecord* returnedData = (GameRecord*)disk->loadFromDisk(address, sizeof(GameRecord));
         listOfFG3_PCT_home.push_back(returnedData->FG3_PCT_home);
+        std::cout<< "this is " << k << " iteration" << endl;
+        std::cout<< "pushed data value is " << returnedData->FG3_PCT_home << endl;
+        k++;
     }
 
-    double sum = std::accumulate(listOfFG3_PCT_home.begin(), listOfFG3_PCT_home.end(), 0);
+    // double sum = std::accumulate(listOfFG3_PCT_home.begin(), listOfFG3_PCT_home.end(), 0.0);
+    double sum;
+
+    for (int i = 0; i < listOfFG3_PCT_home.size(); i++) {
+        sum += listOfFG3_PCT_home[i];
+    }
+
+    std::cout<< "sum calculated is " << sum << endl;
     float average = static_cast<float>(sum) / listOfFG3_PCT_home.size();
+    std::cout<< "average calculated is " << average << endl;
     std::cout << "Average of FG3_PCT_home for the selected range is " << average << std::endl;
     return average;
 }

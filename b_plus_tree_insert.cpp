@@ -148,8 +148,9 @@ void BPlusTree::insert(Address address, float key)
             this->numNodes++;
 
             // Splitting the numKeys between both currentNode and newNode
-            current->numKeys = ceil((maxKeys + 1) / 2);
-            newNode->numKeys = floor((maxKeys + 1) / 2);
+            float totalNumKeys = maxKeys + 1;
+            current->numKeys = ceil((totalNumKeys) / 2);
+            newNode->numKeys = floor((totalNumKeys) / 2);
 
             // Setting the last pointer (, which points to the next node)
             newNode->pointers[maxKeys] = current->pointers[maxKeys];
@@ -290,8 +291,9 @@ void BPlusTree::restructureTree(float key, BPlusTreeNode *parentNode, BPlusTreeN
         this->numNodes++;
 
         // Splitting the numKeys between both parentNode and newParentNode
-        parentNode->numKeys = ceil(maxKeys / 2);
-        newParentNode->numKeys = floor(maxKeys / 2);
+        float totalNumKeys = maxKeys + 1;
+        parentNode->numKeys = ceil(totalNumKeys / 2);
+        newParentNode->numKeys = floor(totalNumKeys / 2);
 
         // Rearranging the newParentNode
         for (int i = 0, j = parentNode->numKeys + 1; i < newParentNode->numKeys; i++, j++)
