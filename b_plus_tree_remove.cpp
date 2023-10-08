@@ -111,12 +111,10 @@ void BPlusTree::remove (float key)
                     leftSiblingIndex = i; 
                     rightSiblingIndex = i+2;
 
-                    // Load node in from disk to main memory.
-                    //Node *mainMemoryNode = (Node *)index->loadFromDisk(cursor->pointers[i + 1], nodeSize);
+                    
                     current_node = (BPlusTreeNode *) current_node->pointers[i+1];
 
-                    //move to new node in main memory
-                    //cursor = (Node *)mainMemoryNode;
+                    
                     break;
                 }
                 
@@ -227,9 +225,7 @@ void BPlusTree::remove (float key)
             // update parentNode  key 
             parentNode->keys[leftSiblingIndex] = current_node->keys[0];
 
-            // save parentNode to disk? (add code here)
-            // save left sib to disk (add code here)
-            // save curr node to disk (add code here)
+            
 
             return; 
            
@@ -267,9 +263,7 @@ void BPlusTree::remove (float key)
             // update parentNode node key to be new lower bound of right sib 
             parentNode->keys[rightSiblingIndex-1] = rightSibling->keys[0];
 
-            //save parentNode to disk (add code here)
-            //save right sib to disk (add code here)
-            //save current node to disk (add code here)
+            
 
             return; 
             
@@ -293,10 +287,9 @@ void BPlusTree::remove (float key)
             leftSibling->numKeys += current_node->numKeys;
             leftSibling->pointers[leftSibling->numKeys] = current_node->pointers[current_node->numKeys];
 
-            // save left sib to disk (add code here)
+           
             numNodes--;
             // remove internal to update parentNode
-            //(add code here)
             removeInternal(parentNode->keys[leftSiblingIndex], (BPlusTreeNode *) parentNode, (BPlusTreeNode *) current_node);
 
             // aft updating parentNode delete current node from disk
@@ -320,8 +313,7 @@ void BPlusTree::remove (float key)
             current_node->numKeys += rightSibling->numKeys;
             current_node->pointers[current_node->numKeys] = rightSibling->pointers[rightSibling->numKeys];
             numNodes--;
-            // save current node to disk (add code here)
-            // remove internal to update parentNode and fully remove right node (add code here)
+
             removeInternal(parentNode->keys[rightSiblingIndex-1], (BPlusTreeNode *)parentNode, (BPlusTreeNode *)rightSibling);
             // delete right node from disk 
             return; 
@@ -344,7 +336,7 @@ void BPlusTree::removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNo
     //then we need to change the root to its child 
     if (parentNode->numKeys == 1) 
     {
-      // if larger pointer points to child, make it new root?
+      // if larger pointer points to child, make it new root
       if (parentNode->pointers[1] == childNode)
       {
         //delete child 
