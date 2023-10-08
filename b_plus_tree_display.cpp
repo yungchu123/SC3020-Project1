@@ -12,7 +12,6 @@ using namespace std;
 void* address;
 
 // Display a node
-
 void BPlusTree::displayNode(BPlusTreeNode* node)
 {
     // Print out all contents in the Node as as |Pointer|Key|Pointer
@@ -37,7 +36,7 @@ void BPlusTree::displayNode(BPlusTreeNode* node)
         std::cout << " Null |";
     }
 
-    std::cout << " x |"; // Print out the node -> keys[node->numOfKeys]
+
 
 
     // if the numOfKeys is lesser than maxKeys, it will have empty keys and pointers
@@ -61,8 +60,19 @@ void BPlusTree::displayNode(BPlusTreeNode* node)
     }
 
     std::cout << endl;
+    std::cout << endl;
 }
 
+// Display only keys in the node
+void BPlusTree::displayNodeKeys(BPlusTreeNode* node) {
+    std::cout << "| ";
+    for (int i = 0; i < node->numKeys; i++) {
+        address = node->pointers[i];
+        std::cout << node -> keys[i] << " | ";
+    }
+    std::cout << endl;
+    std::cout << endl;
+}
 
 // Display a block and its contents in the disk. Assume it's already loaded in main memory.
 void BPlusTree::displayTree(BPlusTreeNode* node, int level)

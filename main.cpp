@@ -131,7 +131,7 @@ int main()
     */
 
     std::cout <<"=====================================Experiment 3=========================================="<<endl;
-    tree.search(0.5, 0.5);
+    tree.AverageFG3_PCT_home(tree.search(0.5, 0.5), &disk);
     std::cout << std::endl;
 
                /*
@@ -147,7 +147,7 @@ int main()
     */
 
     std::cout <<"=====================================Experiment 4=========================================="<<endl;
-    tree.search(0.6, 1);
+    tree.AverageFG3_PCT_home(tree.search(0.6, 1), &disk); 
     std::cout << std::endl;
 
                /*
