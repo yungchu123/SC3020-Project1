@@ -11,6 +11,7 @@ using namespace std;
 
 void BPlusTree::removeRange(float minValue, float maxValue)
 {
+    numNodes = getNumNodes(); 
     if (rootOfTree == nullptr)
     {
         //throw std::logic_error('Tree is empty');
@@ -175,7 +176,7 @@ void BPlusTree::remove (float key)
 
           {
             // deallocate block used to store root node?
-
+            numNodes--;
             rootOfTree = nullptr; 
           }
           
@@ -219,7 +220,7 @@ void BPlusTree::remove (float key)
             current_node->pointers[0] = leftSibling->pointers[leftSibling->numKeys - 1];
             current_node->numKeys++;
             leftSibling->numKeys--; 
-
+            
             //update left sib 
             leftSibling->pointers[current_node->numKeys] = leftSibling->pointers[current_node->numKeys];
 
@@ -293,7 +294,7 @@ void BPlusTree::remove (float key)
             leftSibling->pointers[leftSibling->numKeys] = current_node->pointers[current_node->numKeys];
 
             // save left sib to disk (add code here)
-
+            numNodes--;
             // remove internal to update parentNode
             //(add code here)
             removeInternal(parentNode->keys[leftSiblingIndex], (BPlusTreeNode *) parentNode, (BPlusTreeNode *) current_node);
@@ -318,7 +319,7 @@ void BPlusTree::remove (float key)
             // update variables and make cur node's last pointer point to next leaf node pointed to by right sib
             current_node->numKeys += rightSibling->numKeys;
             current_node->pointers[current_node->numKeys] = rightSibling->pointers[rightSibling->numKeys];
-
+            numNodes--;
             // save current node to disk (add code here)
             // remove internal to update parentNode and fully remove right node (add code here)
             removeInternal(parentNode->keys[rightSiblingIndex-1], (BPlusTreeNode *)parentNode, (BPlusTreeNode *)rightSibling);
@@ -550,7 +551,7 @@ void BPlusTree::removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNo
     // update variables, make left sib last pointer point to the next leaf node that was pointed by the cur node
     leftSibling->numKeys += parentNode->numKeys+1; 
     parentNode->numKeys = 0;
-
+    numNodes--;
     //save left node to disk 
     //delete current node
     removeInternal(newParent->keys[leftSiblingIndex], newParent, parentNode);
@@ -581,7 +582,7 @@ void BPlusTree::removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNo
     //update variables 
     parentNode->numKeys += rightSibling->numKeys + 1;
     rightSibling->numKeys = 0; 
-
+    numNodes--;
     //save current node to disk 
     //delete right node
     removeInternal(newParent->keys[rightSiblingIndex-1], newParent, rightSibling);
