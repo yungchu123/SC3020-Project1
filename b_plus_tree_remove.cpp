@@ -50,6 +50,7 @@ void BPlusTree::removeRange(float minValue, float maxValue)
                     // if no key is within range then break
                     if (current_node->keys[i] > maxValue)
                     {
+                        std::cout << "can't find key, leaving removeRange" << endl; 
                         break;
                     }
                     
@@ -135,7 +136,7 @@ void BPlusTree::remove (float key)
         // if key can't be found, return error 
         if (!found)
         { 
-          std::cout << "No longer anymore keys to delete" << endl; 
+          std::cout << "Unable to find" << key << "to delete" << endl; 
           
           // update numNodes and numNodes deleted
           return;
@@ -143,13 +144,10 @@ void BPlusTree::remove (float key)
 
         // delete linked list 
         // delete linked list code 
-
+        
         //delete duplicates within the key first
         Address *LLAddress = (Address *)current_node->pointers[pos];
-          // works for duplicates to delete too 
-          LL linkedlist = *(LL *)disk->loadFromDisk(*LLAddress, sizeof(LL));
-          // delete linked list
-          linkedlist.LLdelete(); 
+        disk->deallocate(*LLAddress, sizeof(LL));
         
         //delete key
         for (int i = pos; i < current_node->numKeys; i++)
@@ -190,8 +188,7 @@ void BPlusTree::remove (float key)
         if (current_node->numKeys >= (maxKeys + 1) / 2)
         {
           // min no. of keys maintained, no need to rebalance
-          std::cout << "Deleted key successfully no underflow" << endl; 
-          
+          std::cout << "Deleted key" << key << "successfully no underflow" << endl; 
           return; 
         }
 

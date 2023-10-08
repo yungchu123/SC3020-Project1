@@ -13,6 +13,16 @@ private:
 
 public:
     LLNode(Address recordAddress);
+
+    Address getRecordAddress()
+    {
+        return recordAddress;
+    }
+
+    LLNode* getNext()
+    {
+        return next;
+    }
 };
 
 class LL
@@ -26,7 +36,22 @@ public:
     LL(LLNode *head, float key);
 
     void insert(Address recordAddress);
-    
+
+       LLNode* getHead()
+    {
+        return head;
+    }
+
+    int getNumRecords()
+    {
+        return numRecords;
+    }
+
+    float getKey()
+    {
+        return key;
+    }
+
     //changed delete to LLdelete
     void LLdelete();
     

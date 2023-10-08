@@ -30,15 +30,24 @@ class BPlusTree
 
     public:
         BPlusTree(std::size_t blockSize, MemoryPool *disk); // Constructor class for BPlusTree
-        void search(float lowerBoundKey, float upperBoundKey); // search function, taking in lowerBoundKey and upperBoundKey
+        std::vector<float>  search(float lowerBoundKey, float upperBoundKey); // search function, taking in lowerBoundKey and upperBoundKey
         void displayNode(BPlusTreeNode *Node);
         void displayTree(BPlusTreeNode *node, int level);
-
-        BPlusTreeNode* findParent(BPlusTreeNode *current, BPlusTreeNode *child);
-        void remove(double minValue, double maxValue);
+        void remove(float minValue, float maxValue);
         void removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);
+
+        // Insert a key into the tree
+        void insert(Address address, float key);
+
+        void restructureTree(float x, BPlusTreeNode *parentNode, BPlusTreeNode *childNode);
+        
+        BPlusTreeNode* findParent(BPlusTreeNode *current, BPlusTreeNode *child);
+
         void displayLL(LL *LinkedList);
-          // Return height of tree
+
+        void displayBlock(Address *address);
+        
+        // Return height of tree
         int getLevels() {
             return levels;
         }
@@ -52,7 +61,14 @@ class BPlusTree
         int getMaxKeys() {
             return maxKeys;
         }
-    
+
+        // Return the root of tree
+        BPlusTreeNode* getRootOfTree() {
+            return rootOfTree;
+        }
+
+        void removeRange(float minValue, float maxValue);
+        void remove(float key);
 };
 
 #endif

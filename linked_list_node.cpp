@@ -22,6 +22,7 @@ void LL::insert(Address recordAddress)
     this->numRecords++;
 }
 
+//changed delete to LLdelete
 void LL::LLdelete(){
     LLNode* current = this->head;
     LLNode* nextNode;
