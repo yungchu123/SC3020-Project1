@@ -99,11 +99,7 @@ void BPlusTree::remove (float key)
                 // if key is lesser than current key go to left pointer's node
                 if (key < current_node->keys[i])
                 {
-                    // load node in from disk to main mem
-                    // Node *mainMemoryNode = (Node *)index->loadFromDisk(cursor->pointers[i], nodeSize);
                     current_node = (BPlusTreeNode *) current_node->pointers[i];
-                    // Move to new node in main memory.
-                    //cursor = (Node *)mainMemoryNode
                     break;
                 }
                 if (i==current_node->numKeys-1)
