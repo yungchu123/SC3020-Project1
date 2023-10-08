@@ -13,7 +13,10 @@ using namespace std;
 
 std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey)
 {
-    
+    int counterOfIndexNodeAccess = 0;
+    int counterOfInternalNodeAccess = 0;
+    int counterOfLeafNodeAccess = 0;
+
     bool found = false;
     
     // An Array that stores the Addresses of the searched records, so that we can calculate values based on them.
@@ -33,7 +36,10 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
 
        // Display the content of the node.
        std::cout << "Index Node accessed, Content is ----" << endl;
+
        displayNode(current_node);
+       counterOfIndexNodeAccess++;
+       counterOfInternalNodeAccess++;
 
         // std::cout << "Index node accessed. Content is -------";
         while (current_node->isLeaf == false)
@@ -49,6 +55,8 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
                     // Display the content of the node.
                     std::cout << "Index Node accessed, Content is ----" << endl;;
                     displayNode(current_node);
+                    counterOfIndexNodeAccess++;
+                    counterOfInternalNodeAccess++;
                     
                     break;
                 }
@@ -61,11 +69,16 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
                     // Display the content of the node.
                     std::cout << "Index Node accessed, Content is ----" << endl;;
                     displayNode(current_node);
+                    counterOfIndexNodeAccess++;
+                    counterOfInternalNodeAccess++;
                     
                     break;
                 }
 
             }
+
+            counterOfInternalNodeAccess = counterOfInternalNodeAccess - 1;
+            counterOfLeafNodeAccess = counterOfLeafNodeAccess + 1;
 
             // Here, the current node is a leaf node.
 
@@ -90,12 +103,12 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
                         addressOfLLwithinBound = (Address*)current_node -> pointers[i];
                         LL linkedList = *(LL *)disk->loadFromDisk(*addressOfLLwithinBound, sizeof(LL));
 
-                        std::cout<< "Entered if statement for the key within range" << endl;
+                        // std::cout<< "Entered if statement for the key within range" << endl;
 
                         // Get all the values in the linked list.
                         traversalNode = linkedList.getHead();
                        
-                        j = 0;
+                        //j = 0;
 
                         // while (traversalNode != nullptr)
                         for (int i = 0; i < linkedList.getNumRecords(); i++)
@@ -103,12 +116,12 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
                             // Enter the key into the listOfAddresses array for the number of records with the key.
                             listOfAddresses.push_back(traversalNode->getRecordAddress());
                             traversalNode = traversalNode -> getNext();
-                            std::cout<< "this is " << j << " iteration" << endl;
+                            // std::cout<< "this is " << j << " iteration" << endl;
                             // GameRecord* returnedData = (GameRecord*)disk->loadFromDisk(traversalNode -> getRecordAddress(), sizeof(GameRecord));
                             // returnedData->FG3_PCT_home;
                             // std::cout<< "the key was " << returnedData->FG_PCT_home << endl;
                             // std::cout<< "the value was " << returnedData->FG3_PCT_home << endl;
-                            j++;
+                            //j++;
 
                         }
                         
@@ -135,10 +148,13 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
                 {
                     // update the current_node as the next leaf node.
                     current_node = (BPlusTreeNode *)(current_node->pointers[maxKeys]);
+
                     
                     // Display the content of the node.
                     std::cout << "Index Node accessed, Content is ----"<< endl;;
                     displayNode(current_node);
+                    counterOfIndexNodeAccess++;
+                    counterOfLeafNodeAccess++;
                 }
                 
 
@@ -149,7 +165,11 @@ std::vector<Address>  BPlusTree::search(float lowerBoundKey, float upperBoundKey
                 std::cout << "No records in this range" << std::endl;
             }
 
-            std::cout<< "the number of addresses is " << listOfAddresses.size() << endl;
+            std::cout << "Total Number of Index nodes the process accesses is " << counterOfIndexNodeAccess <<std::endl;
+            std::cout << "Total Number of Internal nodes the process accesses is " << counterOfInternalNodeAccess <<std::endl;
+            std::cout << "Total Number of Leaf nodes the process accesses is " << counterOfLeafNodeAccess <<std::endl;
+
+            // std::cout<< "the number of addresses is " << listOfAddresses.size() << endl;
             return listOfAddresses;
         }
     }
@@ -162,16 +182,16 @@ float BPlusTree::AverageFG3_PCT_home(std::vector<Address> vectorOfAddress, Memor
 
     std::vector<double> listOfFG3_PCT_home;
     int length = vectorOfAddress.size();
-    int k = 0;
+    // int k = 0;
 
     for (int i = 0; i < length; i++)
     {
         Address address = vectorOfAddress[i];
         GameRecord* returnedData = (GameRecord*)disk->loadFromDisk(address, sizeof(GameRecord));
         listOfFG3_PCT_home.push_back(returnedData->FG3_PCT_home);
-        std::cout<< "this is " << k << " iteration" << endl;
-        std::cout<< "pushed data value is " << returnedData->FG3_PCT_home << endl;
-        k++;
+        // std::cout<< "this is " << k << " iteration" << endl;
+        // std::cout<< "pushed data value is " << returnedData->FG3_PCT_home << endl;
+        // k++;
     }
 
     // double sum = std::accumulate(listOfFG3_PCT_home.begin(), listOfFG3_PCT_home.end(), 0.0);
