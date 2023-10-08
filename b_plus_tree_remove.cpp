@@ -7,89 +7,138 @@
 #include <cstring>
 #include <iostream>
 using namespace std;
+// while tree is not empty and keys in range exist
 
-// each b+ tree node is the size of one block
-// so currently 6 keys in 1 node at initialisation
-// should be deleting 580 records
-
-void BPlusTree::remove(double minValue, double maxValue) // 0 and 0.35 threshold for deletion experiment
+void BPlusTree::removeRange(float minValue, float maxValue)
 {
-    //get number of nodes of updated b+ tree
-    // number of levels 
-    // content of root node (only the keys)
-    // running time of process
-    //number of data blocks that woud be accessed via brute force linear scan
-
-    // bool found = false; 
-    // troubleshoot empty tree
     if (rootOfTree == nullptr)
     {
-        throw std::logic_error("Tree is empty");
+        //throw std::logic_error('Tree is empty');
     }
     else
     {
+        bool removed = true; // keeping track if key was removed in last iteration
+        while (removed)
+        {
+            removed = false; // reset flag at start of each iteration
+            //while we haven't hit a leaf node, if tree is not empty navigate to correct key
+            BPlusTreeNode *current_node = rootOfTree; 
+            while (current_node->isLeaf == false)
+            {
+                for (int i = 0; i < current_node->numKeys; i++)
+                {
+                    if (minValue < current_node->keys[i])
+                    {
+                        current_node = (BPlusTreeNode *) current_node->pointers[i]; 
+                        break;
+                    }
+                    
+                    if (i == current_node->numKeys-1)
+                    {
+                        current_node = (BPlusTreeNode *) current_node->pointers[i+1];
+                        break;
+                    }
+                    
+                }
+                
+            }
 
-        // if tree not empty, iterate through root note to find 
+            // at leaf node now 
+                int i; 
+                for (i = 0; i < current_node->numKeys; i++)
+                {
+                    // if no key is within range then break
+                    if (current_node->keys[i] > maxValue)
+                    {
+                        break;
+                    }
+                    
+                    if (current_node->keys[i] >= minValue && current_node->keys[i] <= maxValue)
+                    {
+                        remove(current_node->keys[i]);
+                        removed = true; 
+                        break;
+                    }
+                }
+            
         
+        }
+         
+    }   
+
+}
+
+void BPlusTree::remove (float key)
+{
+    if(rootOfTree == nullptr)
+    {
+        throw std::logic_error("Tree is empty");
+    }
+    else 
+    {
         BPlusTreeNode *leftSibling; 
         BPlusTreeNode *rightSibling; 
         BPlusTreeNode *current_node = rootOfTree; // init current node as root 
         BPlusTreeNode *parentNode; // keeping track of parentNode as we dive deeper
         int leftSiblingIndex, rightSiblingIndex;         // Index of left and right child to borrow from.
-  
-        
-        // Start from root and traverse tree until leaf node
-        // Since leaf nodes store ALL key values along w corresponding pointer to disk file,
-        // while not leaf, follow node to CORRECT key
+
+        // while not leaf following nodes to correct key 
         while (current_node->isLeaf == false)
         {
             // set parentNode of current node (jic we need to assign new child) and disk address
             parentNode = current_node;
 
+            // set parent of node
             for (int i = 0; i < current_node-> numKeys; i++) // checking through all keys at current node
             {
-                // note left and right sibling in the event of borrowing
                 leftSiblingIndex = i - 1;
                 rightSiblingIndex = i + 1;
 
-                // if key in current node is larger than minValue then go the left pointer's node
-                if (minValue <= current_node->keys[i])
+                // if key is lesser than current key go to left pointer's node
+                if (key < current_node->keys[i])
                 {
-                    // get address of the node that the pointer is pointing towards
-                    current_node = (BPlusTreeNode *) current_node->pointers[i]; 
+                    // load node in from disk to main mem
+                    // Node *mainMemoryNode = (Node *)index->loadFromDisk(cursor->pointers[i], nodeSize);
+                    current_node = (BPlusTreeNode *) current_node->pointers[i];
+                    // Move to new node in main memory.
+                    //cursor = (Node *)mainMemoryNode
+                    break;
+                }
+                if (i==current_node->numKeys-1)
+                {
+                    leftSiblingIndex = i; 
+                    rightSiblingIndex = i+2;
 
+                    // Load node in from disk to main memory.
+                    //Node *mainMemoryNode = (Node *)index->loadFromDisk(cursor->pointers[i + 1], nodeSize);
+                    current_node = (BPlusTreeNode *) current_node->pointers[i+1];
+
+                    //move to new node in main memory
+                    //cursor = (Node *)mainMemoryNode;
                     break;
                 }
-                // check if current key is last key in the node, if yes that means its the largest key in the node
-                if (i == current_node->numKeys - 1)
-                {
-                    leftSiblingIndex = i;      // no left sib
-                    rightSiblingIndex = i + 2; // right sib is in the next node
-                    
-                    // get address of the node that the pointer is pointing towards
-                    current_node = (BPlusTreeNode *) current_node->pointers[i+1]; 
-                    break;
-                }
+                
             }
         }
-        // at leaf node now based on minValue 
-        // ----------new implementation of calling delete once rebuild then call remove again---
-        int pos; // position where we find the key we want to delete
         bool found = false; // stop finding once we find one of the key that fits range
+        int pos; 
         for (pos = 0; pos <current_node->numKeys; pos++) // iterating keys within current node
         {
-          if (current_node->keys[pos] >= minValue && current_node->keys[pos] <= maxValue)
+          if (current_node->keys[pos] == key)
           {
             found = true; 
+
             break; 
           }
         }
         
         // if key can't be found, return error 
         if (!found)
-        {
+        { 
           std::cout << "No longer anymore keys to delete" << endl; 
-          return; 
+          
+          // update numNodes and numNodes deleted
+          return;
         }
 
         // delete linked list 
@@ -112,7 +161,14 @@ void BPlusTree::remove(double minValue, double maxValue) // 0 and 0.35 threshold
 
         current_node->numKeys--; // decrement no of keys in current node 
 
-        // move last forward, necessary? 
+        // move last pointer forward if present 
+        current_node->pointers[current_node->numKeys] = current_node->pointers[current_node->numKeys + 1];
+
+        //set all forward pointers from numkey onwards to nullptr
+        for (int i = current_node->numKeys+1 ; i < maxKeys + 1; i++)
+        {
+            current_node->pointers[i] = nullptr; 
+        }
 
         // if current node is root, check for keys 
         if (current_node == rootOfTree)
@@ -129,13 +185,14 @@ void BPlusTree::remove(double minValue, double maxValue) // 0 and 0.35 threshold
 
           return; 
         }
-
+        
         // if deletion not from root, check for underflow 
         if (current_node->numKeys >= (maxKeys + 1) / 2)
         {
           // min no. of keys maintained, no need to rebalance
-          std::cout << "Deleted key successfully" << endl; 
-          remove(minValue, maxValue);
+          std::cout << "Deleted key successfully no underflow" << endl; 
+          
+          return; 
         }
 
         //underflow detected 
@@ -143,6 +200,7 @@ void BPlusTree::remove(double minValue, double maxValue) // 0 and 0.35 threshold
 
         if (leftSiblingIndex >= 0)
         {
+          std::cout << "Trying to borrow from left sib" << endl;
           // find left sibling 
           leftSibling = (BPlusTreeNode *)parentNode->pointers[leftSiblingIndex]; 
           // check if we can borrow without underflow 
@@ -175,12 +233,14 @@ void BPlusTree::remove(double minValue, double maxValue) // 0 and 0.35 threshold
             // save left sib to disk (add code here)
             // save curr node to disk (add code here)
 
-            remove(minValue, maxValue); 
+            return; 
+           
           }
         }
         // 2. try to borrow from right sibling 
         if (rightSiblingIndex <= parentNode->numKeys)
         {
+          std::cout << "Trying to borrow from right sib" << endl;
           rightSibling = (BPlusTreeNode *) parentNode->pointers[rightSiblingIndex]; 
 
           // check if we can borrow without underflow 
@@ -213,13 +273,15 @@ void BPlusTree::remove(double minValue, double maxValue) // 0 and 0.35 threshold
             //save right sib to disk (add code here)
             //save current node to disk (add code here)
 
-            remove(minValue, maxValue); 
+            return; 
+            
             }
             
           }
           //3. merge with left sibling  
           if (leftSiblingIndex >= 0)
           {
+            std::cout << "Trying to merge with left sib" << endl;
             leftSibling = (BPlusTreeNode *) parentNode->pointers[leftSiblingIndex];
 
             // transfer all keys and pointers from cur node to left node 
@@ -240,11 +302,12 @@ void BPlusTree::remove(double minValue, double maxValue) // 0 and 0.35 threshold
             removeInternal(parentNode->keys[leftSiblingIndex], (BPlusTreeNode *) parentNode, (BPlusTreeNode *) current_node);
 
             // aft updating parentNode delete current node from disk
-            remove(minValue, maxValue);
+            return; 
           }
           //4. merge with right sib
           else if (rightSiblingIndex <= parentNode->numKeys)
           {
+            std::cout << "Trying to merge with right sib" << endl;
             rightSibling = (BPlusTreeNode *) parentNode->pointers[rightSiblingIndex]; 
 
             // moving right sib's keys into ours 
@@ -263,17 +326,16 @@ void BPlusTree::remove(double minValue, double maxValue) // 0 and 0.35 threshold
             // remove internal to update parentNode and fully remove right node (add code here)
             removeInternal(parentNode->keys[rightSiblingIndex-1], (BPlusTreeNode *)parentNode, (BPlusTreeNode *)rightSibling);
             // delete right node from disk 
-            remove(minValue, maxValue); 
+            return; 
           }
-          
-
     }
-        
-
 }
 
 
+// remove internal nodes
+
 void BPlusTree::removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNode *childNode)
+
 {
   //load in current node -- parent, and child 
   
@@ -531,29 +593,9 @@ void BPlusTree::removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNo
   
 }
 
-// taken from shang yau
-BPlusTreeNode *BPlusTree::findParent(BPlusTreeNode *current, BPlusTreeNode *child)
-{
-    BPlusTreeNode *parent = nullptr;
-    if (current->isLeaf)
-        return nullptr;
 
-    for (int i = 0; i < current->numKeys + 1; i++)
-    {
-        if (current->pointers[i] == child)
-        {
-            parent = current;
-            return parent;
-        }
-        else
-        {
-            parent = findParent((BPlusTreeNode *)current->pointers[i], child);
-            if (parent != nullptr)
-                return parent;
-        }
-    }
-    return parent;
-}
+
+
 // need to bear in mind that other leaf nodes could have keys that fall within the range
 // found leaf nodes with gameRecord.FG_PCT_home <= threshold
 // for each leaf node
