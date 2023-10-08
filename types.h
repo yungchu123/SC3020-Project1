@@ -20,9 +20,9 @@ struct GameRecord
     char GAME_DATE_EST[10];
     int TEAM_ID_home;
     int PTS_home;
-    double FG_PCT_home;
-    double FT_PCT_home;
-    double FG3_PCT_home;
+    float FG_PCT_home;
+    float FT_PCT_home;
+    float FG3_PCT_home;
     int AST_home;
     int REB_home;
     int HOME_TEAM_WINS;
