@@ -51,7 +51,7 @@ void BPlusTree::removeRange(float minValue, float maxValue)
                     // if no key is within range then break
                     if (current_node->keys[i] > maxValue)
                     {
-                        std::cout << "can't find key, leaving removeRange" << endl; 
+                        //std::cout << "can't find key, leaving removeRange" << endl; 
                         break;
                     }
                     
@@ -183,7 +183,7 @@ void BPlusTree::remove (float key)
         if (current_node->numKeys >= (maxKeys + 1) / 2)
         {
           // min no. of keys maintained, no need to rebalance
-          std::cout << "Deleted key" << key << "successfully no underflow" << endl; 
+          //std::cout << "Deleted key" << key << "successfully no underflow" << endl; 
           return; 
         }
 
@@ -192,7 +192,7 @@ void BPlusTree::remove (float key)
 
         if (leftSiblingIndex >= 0)
         {
-          std::cout << "Trying to borrow from left sib" << endl;
+          //std::cout << "Trying to borrow from left sib" << endl;
           // find left sibling 
           leftSibling = (BPlusTreeNode *)parentNode->pointers[leftSiblingIndex]; 
           // check if we can borrow without underflow 
@@ -230,7 +230,7 @@ void BPlusTree::remove (float key)
         // 2. try to borrow from right sibling 
         if (rightSiblingIndex <= parentNode->numKeys)
         {
-          std::cout << "Trying to borrow from right sib" << endl;
+          //std::cout << "Trying to borrow from right sib" << endl;
           rightSibling = (BPlusTreeNode *) parentNode->pointers[rightSiblingIndex]; 
 
           // check if we can borrow without underflow 
@@ -582,13 +582,4 @@ void BPlusTree::removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNo
 
 
 
-// need to bear in mind that other leaf nodes could have keys that fall within the range
-// found leaf nodes with gameRecord.FG_PCT_home <= threshold
-// for each leaf node
-// iterate through entries and if gameRecord.FG_PCT_home <= threshold then delete entry
-// delete key. if range no longer yields results, then deletion complete
-// AT ALL TIMES make sure keys are SORTED and tree is BALANCED
-// handle underflow: check if node satisfies minimum No of keys
-// if not then 1) borrow from sibling node and update parentNode if necessary
-// else 2) merge with sibling node and update parentNode if necessary
-// repeat this underflow handling process for parentNode nodes recursively until I reach root node
+
