@@ -14,7 +14,7 @@ void BPlusTree::removeRange(float minValue, float maxValue)
     numNodes = getNumNodes(); 
     if (rootOfTree == nullptr)
     {
-        throw std::logic_error('Tree is empty');
+        throw std::logic_error("Tree is empty");
     }
     else
     {
@@ -131,7 +131,7 @@ void BPlusTree::remove (float key)
         // if key can't be found, return error 
         if (!found)
         { 
-          std::cout << "Unable to find" << key << "to delete" << endl; 
+          //std::cout << "Unable to find" << key << "to delete" << endl; 
           
           // update numNodes and numNodes deleted
           return;
@@ -174,7 +174,7 @@ void BPlusTree::remove (float key)
             rootOfTree = nullptr; 
           }
           
-          std::cout << "Root node has been deleted" << endl;
+          //std::cout << "Root node has been deleted" << endl;
 
           return; 
         }
@@ -269,7 +269,7 @@ void BPlusTree::remove (float key)
           //3. merge with left sibling  
           if (leftSiblingIndex >= 0)
           {
-            std::cout << "Trying to merge with left sib" << endl;
+            //std::cout << "Trying to merge with left sib" << endl;
             leftSibling = (BPlusTreeNode *) parentNode->pointers[leftSiblingIndex];
 
             // transfer all keys and pointers from cur node to left node 
@@ -294,7 +294,7 @@ void BPlusTree::remove (float key)
           //4. merge with right sib
           else if (rightSiblingIndex <= parentNode->numKeys)
           {
-            std::cout << "Trying to merge with right sib" << endl;
+            //std::cout << "Trying to merge with right sib" << endl;
             rightSibling = (BPlusTreeNode *) parentNode->pointers[rightSiblingIndex]; 
 
             // moving right sib's keys into ours 
@@ -343,7 +343,7 @@ void BPlusTree::removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNo
         // delete old root -- parent 
         parentNode = nullptr; 
 
-        std::cout << "root node has changed" << endl;
+        //std::cout << "root node has changed" << endl;
         return;
       }
       // else if left pointer in root -- parent, contains the child then delete from there
@@ -354,7 +354,7 @@ void BPlusTree::removeInternal(float key, BPlusTreeNode *parentNode, BPlusTreeNo
         rootOfTree = (BPlusTreeNode *) parentNode->pointers[1];
         //delete old root -- parent
         parentNode = nullptr; 
-        std::cout << "root node has changed" << endl; 
+        //std::cout << "root node has changed" << endl; 
         return;
       }
       
