@@ -156,12 +156,12 @@ void BPlusTree::insert(Address address, float key)
             newNode->pointers[maxKeys] = current->pointers[maxKeys];
             current->pointers[maxKeys] = newNode;
 
-            std::cout<<"CurrentNode"<<std::endl;
-            this->displayNode(current);
-            std::cout << std::endl;
-            std::cout<<"NewNode"<<std::endl;
-            this->displayNode(newNode);
-            std::cout<<"End"<<std::endl;
+            // std::cout<<"CurrentNode"<<std::endl;
+            // this->displayNode(current);
+            // std::cout << std::endl;
+            // std::cout<<"NewNode"<<std::endl;
+            // this->displayNode(newNode);
+            // std::cout<<"End"<<std::endl;
 
             // Rearranging the nodes according to the ascending order
             int i;
@@ -185,12 +185,12 @@ void BPlusTree::insert(Address address, float key)
                 current->pointers[i] = nullptr;
             }
 
-            std::cout<<"CurrentNode"<<std::endl;
-            this->displayNode(current);
-            std::cout << std::endl;
-            std::cout<<"NewNode"<<std::endl;
-            this->displayNode(newNode);
-            std::cout<<"End"<<std::endl;
+            // std::cout<<"CurrentNode"<<std::endl;
+            // this->displayNode(current);
+            // std::cout << std::endl;
+            // std::cout<<"NewNode"<<std::endl;
+            // this->displayNode(newNode);
+            // std::cout<<"End"<<std::endl;
 
             // Adjusting/ Creating parent node
             // Check if currentNode == root
@@ -208,9 +208,9 @@ void BPlusTree::insert(Address address, float key)
                 this->numNodes++;
                 this->levels++;
 
-                std::cout<<"RootNode"<<std::endl;
-                this->displayNode(newRoot);
-                std::cout<<"End"<<std::endl;
+                // std::cout<<"RootNode"<<std::endl;
+                // this->displayNode(newRoot);
+                // std::cout<<"End"<<std::endl;
             }
             else
             {

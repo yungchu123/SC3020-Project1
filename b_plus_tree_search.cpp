@@ -205,10 +205,12 @@ float BPlusTree::AverageFG3_PCT_home(std::vector<Address> vectorOfAddress, Memor
         sum += listOfFG3_PCT_home[i];
     }
 
-    std::cout<< "sum calculated is " << sum << endl;
+    std::cout << std::endl;
+    // std::cout<< "sum calculated is " << sum << endl;
     float average = static_cast<float>(sum) / listOfFG3_PCT_home.size();
-    std::cout<< "average calculated is " << average << endl;
+    // std::cout<< "average calculated is " << average << endl;
     std::cout << "Average of FG3_PCT_home for the selected range is " << average << std::endl;
+    std::cout << std::endl;
     return average;
 }
 

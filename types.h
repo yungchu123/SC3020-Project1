@@ -26,6 +26,6 @@ struct GameRecord
     int AST_home;
     int REB_home;
     int HOME_TEAM_WINS;
-}; // Total 72B
+}; // Total 42B
 
 #endif

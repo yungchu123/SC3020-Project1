@@ -12,8 +12,6 @@
 
 int main()
 {
-    std::cout << "Hello world\n";
-
     // Initialise
     int BLOCKSIZE = 400;             // 400B
     int MEMORYPOOLSIZE = 500000000;  // 500MB
@@ -215,6 +213,7 @@ int main()
     - the number of data blocks that would be accessed by a brute-force linear scan method (i.e., it scans the data blocks one by one) and its running time (for comparison)
     =============================================================
     */
+    std::cout <<"=====================================Experiment 5=========================================="<<endl;
     std:: cout << "removing nodes" << endl;
     tree.removeRange(0,0.35); 
     std:: cout << "removed nodes successful" << endl;
